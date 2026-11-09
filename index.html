@@ -552,7 +552,7 @@ const W={
  cactus:{name:'책상 반려식물',col:'#2e9e5b',dmg:[2,4,4,6,12],cnt:[1,1,1,1,1],cd:3,type:'cactus',spd:260,desc:'책상 위 선인장이 튀어 다니며 가시 발사',evo:{with:'monitor',name:'가시 선인장 폭발',dmg:12,thorn:9}},
  drill:{name:'탈출 땅굴 드릴',col:'#5c6580',dmg:[1,1,1,1.33,1.33],cnt:[1,2,2,2,3],cd:2.4,type:'drill',spd:420,desc:'퇴사각! 벽에 튕기며 관통하는 탈출 드릴',evo:{with:'book',name:'추적 땅굴 드릴',dmg:12,cnt:1,home:1}},
  tack:{name:'소심한 복수 압정',col:'#d8322f',dmg:[10,10,20,20,20],cnt:[1,2,2,2,3],cd:3,type:'tack',desc:'얄미운 자리에 몰래 깐 압정, 밟으면 튐',evo:{with:'copier',name:'고압 복수 압정',dmg:30,cnt:3,shock:1}},
- laser:{name:'노트북 딴짓 레이저',col:'#d8322f',dmg:[.6,1.2,1.2,2,3],cnt:[4,4,4,4,4],cd:2,type:'laser',desc:'몰래 켠 노트북 화면 레이저가 몸 주위를 회전',evo:{with:'multi',name:'전사 발표 빔',cnt:8}}
+ laser:{name:'노트북 딴짓 레이저',col:'#d8322f',dmg:[.3,.55,.55,.9,1.3],cnt:[4,4,4,4,4],cd:2.8,type:'laser',desc:'몰래 켠 노트북 화면 레이저가 몸 주위를 회전',evo:{with:'multi',name:'전사 발표 빔',cnt:8}}
 };
 const ICO={pen:'w_pen',stamp:'pj_stamp',stapler:'pj_staple',swing:'w_swing',cutter:'w_cutter',presenter:'w_presenter',shredder:'w_shredder',cactus:'w_cactus',drill:'w_drill',tack:'w_tack',binder:'w_binder',copier:'w_copier',chair:'w_chair',coffee:'w_coffee',board:'w_board',cards:'w_cards',ball:'w_ball',printer:'w_printer',msgA:'w_msgA',msgB:'w_msgB',laser:'w_laser',
  eff:'p_atk',multi:'p_cd',book:'p_exp',speed:'p_cnt',bank:'p_gold',mental:'p_def',over:'p_luck',vita:'p_regen',kick:'p_spd',net:'p_mag',health:'p_hp',monitor:'p_crit',lunch:'i_food',gold:'fx_coin'};
@@ -641,7 +641,7 @@ function shoot(o){S.bul.push({mine:1,life:1.6,r:6,pierce:0,hitset:new Set(),...o
 // 테스트 버전: 커피 무한 (출시 전 false로 바꿀 것)
 const TEST_INF=true;
 // ── 밸런스 조절값 (11/6 대표 피드백: 너무 쉬움) ──
-const BAL={enemyHp:1.8,enemySpd:1.05,weaponCd:1.15,contact:1.1}; // 11/6 13시: 너무 어렵다 → 중간값
+const BAL={enemyHp:1.8,enemySpd:1.05,weaponCd:1.25,contact:1.1}; // 11/6 13시: 너무 어렵다 → 중간값
 // ── 처치 파편 효과 (원본의 처치 6~8프레임 대신, 몬스터 재질별 파편을 코드로) ──
 const PSTYLE={mon_01n:['paper','#f7f5ef'],mon_02:['paper','#ffffff'],mon_03:['paper','#ffd84a'],mon_04:['ink','#d8322f'],mon_05:['ink','#c7d3ff'],mon_06:['paper','#5fcf54'],
  mon_07:['paper','#ffffff'],mon_08:['paper','#f7f5ef'],mon_09:['metal','#d8322f'],mon_10:['metal','#9aa0b3'],mon_11:['ink','#b35bd6'],mon_12:['paper','#c08a4a'],mon_13:['ink','#7a4a22'],mon_14:['ink','#3c8ef0'],mon_15:['paper','#ffffff'],boss_3:['paper','#1d2333']};
@@ -826,7 +826,7 @@ function floorTile(ci){if(FT_C[ci])return FT_C[ci];const c=document.createElemen
 const SPW={doc:5,spam:3,printer:1.2,plant:.6,moth:3,bug:2,radio:1.2,soldier:1.5};
 function pickType(mix){const n=Math.min(mix.length,1+S.gt/90|0),L=mix.slice(0,n);let tot=0;for(const k of L)tot+=SPW[k]||1;let r=Math.random()*tot,k=L[0];for(const t of L){r-=SPW[t]||1;if(r<=0){k=t;break}}
   if(k==='plant'){let c=0;for(const e of S.en)if(e.type==='plant')c++;if(c>=4)k='doc'}return k}
-const STRESS={doc:{n:'업무 폭탄 서류',s:'과도한 업무량',f:'번아웃 원인 1위(42.4%)'},spam:{n:'스팸 메일',s:'끝없는 메일·알림',f:'집중을 끊는 방해'},printer:{n:'고장난 복합기',s:'장비·시스템 고장',f:'급할 때 꼭 고장'},plant:{n:'민원 전화',s:'고객·거래처 갑질',f:'스트레스 원인 9.9%'},moth:{n:'야근 유령',s:'장시간 노동',f:'주말·휴일 근무 경험 44%'},bug:{n:'마감 알람',s:'성과·마감 압박',f:'스트레스 원인 8.9%'},radio:{n:'뒷말 말풍선',s:'상사·동료 인간관계',f:'스트레스 원인 1위(25.2%)'},soldier:{n:'단톡방 폭주',s:'퇴근 후 업무 연락',f:'쉬어도 쉰 게 아님'},excel:{n:'엑셀 괴물',s:'보고서 지옥',f:'엘리트 · 처치 시 상자'}};
+const STRESS={doc:{n:'업무 폭탄 서류',s:'과도한 업무량',f:'번아웃 원인 1위(42.4%)'},spam:{n:'스팸 메일',s:'끝없는 메일·알림',f:'집중을 끊는 방해'},printer:{n:'고장난 복합기',s:'장비·시스템 고장',f:'급할 때 꼭 고장'},plant:{n:'민원 전화',s:'고객·거래처 갑질',f:'스트레스 원인 9.9%'},moth:{n:'야근 유령',s:'장시간 노동',f:'주말·휴일 근무 경험 44%'},bug:{n:'마감 알람',s:'성과·마감 압박',f:'스트레스 원인 8.9%'},radio:{n:'뒷말 말풍선',s:'상사·동료 인간관계',f:'스트레스 원인 1위(25.2%)'},soldier:{n:'단톡방 폭주',s:'퇴근 후 업무 연락',f:'쉬어도 쉰 게 아님'},excel:{n:'엑셀 괴물',s:'보고서 지옥',f:'엘리트 · 처치 시 깜짝 보너스 봉투'}};
 const STRBOSS=[['깐깐한 팀장','마이크로매니징'],['결재 독촉 지네','끝없는 재촉'],['야근의 화신 부장','야근 강요'],['감사팀','감시·평가'],['숫자 귀신 재무팀','실적 숫자 압박'],['이사회','회사 미래 불안'],['성난 본부장','윗선의 분노']];
 function seeStress(t){if(!STRESS[t]||!SV)return;SV.seen=SV.seen||{};if(SV.seen[t])return;SV.seen[t]=1;saveSV();if(S&&S.gt>3)flash('새 스트레스 등장: '+STRESS[t].n+' — '+STRESS[t].s)}
 function renderDex(){const seen=(SV&&SV.seen)||{};$('dexList').innerHTML=Object.entries(STRESS).map(([k,v])=>{const im=IMG[TYPES[k].img]||IMG[TYPES[k].img.replace(/n$/,'')]||'';const ok=seen[k];
@@ -1046,7 +1046,7 @@ function step(dt){
   if(lane())for(const e of S.en)if(!e.boss&&!e.seg)clampLane(e);
   for(const g of S.gems){if(!g.pull&&!onScr(g,30))g.pull=1;const d=d2(g,p);if(d<mag*mag||g.pull){g.pull=1;const a=Math.atan2(p.y-g.y,p.x-g.x);g.x+=Math.cos(a)*420*dt;g.y+=Math.sin(a)*420*dt}if(g.pull){const a2=Math.atan2(p.y-g.y,p.x-g.x);g.x+=Math.cos(a2)*900*dt;g.y+=Math.sin(a2)*900*dt}if(d<16*16){got+=g.v;g.v=0}}
   if(got)sfx('gem');S.exp+=got*(1+.08*L('book'))*(PR('vet')?1.1:1)*(S.night?1.5:1)*(1+SB().exp)*((S.df&&S.df.exp)||1);S.gems=S.gems.filter(g=>g.v>0);
-  for(const it of S.items)if(d2(it,p)<24*24){it.got=1;sfx('pick');if(it.k==='magnet'){for(const g of S.gems)g.pull=1;flash('🧲 인맥 총동원! 경력치 전부 흡수')}else if(it.k==='crate'){const r=Math.random();const hasMag=S.items.some(i=>i.k==='magnet');const k=r<.25&&!hasMag?'magnet':r<.37?'lunch':r<.6?'bomb':'gold';if(k==='gold'){const g=Math.round(30*(1+S.ci*.5));S.gold+=g;flash('📦 택배 도착! 월급 +'+g)}else S.items.push({x:it.x+45,y:it.y,k,t0:S.clock})}else if(it.k==='lunch')S.hp=Math.min(S.hpMax,S.hp+S.hpMax*.3*(PR('lunch')?1.1:1)*(PR('rest')?1.1:1));else{for(const e of S.en)if(!e.boss&&!e.elite)e.hp=0;S.fx.push({k:'boom',x:p.x,y:p.y,t:.5,r:260})}}
+  for(const it of S.items)if(d2(it,p)<24*24){it.got=1;sfx('pick');if(it.k==='magnet'){for(const g of S.gems)g.pull=1;flash('🧲 인맥 총동원! 경력치 전부 흡수')}else if(it.k==='crate'){const r=Math.random();const hasMag=S.items.some(i=>i.k==='magnet');const k=r<.25&&!hasMag?'magnet':r<.37?'lunch':r<.6?'bomb':'gold';if(k==='gold'){const b=pickBonus();const g=Math.round(30*(1+S.ci*.5)*b[1]);S.gold+=g;flash(b[0]+' 월급 +'+g)}else S.items.push({x:it.x+45,y:it.y,k,t0:S.clock})}else if(it.k==='lunch')S.hp=Math.min(S.hpMax,S.hp+S.hpMax*.3*(PR('lunch')?1.1:1)*(PR('rest')?1.1:1));else{for(const e of S.en)if(!e.boss&&!e.elite)e.hp=0;S.fx.push({k:'boom',x:p.x,y:p.y,t:.5,r:260})}}
   for(const it of S.items)if(it.got&&it.k==='bomb'&&!it.h2&&it.from!=='x'){it.h2=1;S.hang=5;flash('🍺 회식 후유증! 5초간 방향이 반대로');sfx('boom')}
   S.items=S.items.filter(i=>!i.got&&!(i.t0!=null&&S.clock-i.t0>30));
   if(S.exp>=S.need){S.exp-=S.need;S.lv++;S.need=Math.round(6+S.lv*5+S.lv*S.lv*.2);S.hp=Math.min(S.hpMax,S.hp+S.hpMax*(PR('cheer')?.2:.05));sfx('lvup');levelUp()}
@@ -1100,7 +1100,7 @@ function draw(){
       cx.strokeStyle='rgba(255,60,80,.28)';cx.lineWidth=12;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(x2,y2);cx.stroke();
       cx.strokeStyle='rgba(255,70,90,.9)';cx.lineWidth=4;cx.stroke();cx.strokeStyle='#fff';cx.lineWidth=1.5;cx.stroke();
       cx.fillStyle='rgba(255,200,210,.9)';cx.beginPath();cx.arc(x2,y2,4,0,6.283);cx.fill()}
-    cx.translate(p.x,p.y-26);cx.fillStyle='#3a4256';cx.fillRect(-11,-8,22,13);cx.fillStyle='#8fe3ff';cx.fillRect(-9,-6,18,9);cx.fillStyle='#596277';cx.fillRect(-13,5,26,3);cx.restore();continue}
+    cx.restore();continue}
     cx.fillStyle=z.poison?'rgba(110,190,60,.45)':z.mine?`rgba(216,50,47,${.15+.25*(1-z.t/1.6)})`:'rgba(138,90,43,.45)';cx.beginPath();cx.arc(z.x,z.y,z.r,0,6.283);cx.fill()}
   if(S.w.board){const R=90*area(),ev=S.evo.board,t=(S.clock||0);cx.save();cx.fillStyle=ev?'rgba(122,79,208,.10)':'rgba(90,169,255,.08)';cx.beginPath();cx.arc(p.x,p.y,R,0,6.283);cx.fill();
     for(let i=0;i<3;i++){const k=((t*.9+i/3)%1),r=R*(.35+.65*k);cx.strokeStyle=ev?`rgba(150,110,255,${.6*(1-k)})`:`rgba(90,169,255,${.6*(1-k)})`;cx.lineWidth=4*(1-k)+1.5;
@@ -1108,7 +1108,7 @@ function draw(){
     cx.translate(p.x,p.y-30);cx.strokeStyle='#2b3040';cx.lineWidth=3;cx.beginPath();cx.arc(0,6,13,Math.PI*1.1,Math.PI*1.9);cx.stroke();
     for(const sx of[-13,13]){cx.fillStyle=ev?'#7a4fd0':'#f7f5ef';cx.strokeStyle='#2b3040';cx.lineWidth=1.5;cx.beginPath();cx.ellipse(sx,8,5,7,0,0,6.283);cx.fill();cx.stroke()}cx.restore()}
   for(const gm of S.gems){if(!inView(gm,20))continue;if(imgs.fx_exp.complete){const z=gm.v>=20?24:gm.v>=5?18:gm.v>=2?14:10,gb=Math.sin((S.clock||0)*5+gm.x*.1)*2;cx.drawImage(imgs.fx_exp,gm.x-z/2,gm.y-z/2+gb,z,z);continue}cx.fillStyle=gm.v>=5?'#f2c230':gm.v>=2?'#3c8ef0':'#5fcf54';cx.beginPath();cx.moveTo(gm.x,gm.y-5);cx.lineTo(gm.x+4,gm.y);cx.lineTo(gm.x,gm.y+5);cx.lineTo(gm.x-4,gm.y);cx.fill()}
-  for(const it of S.items){const ii=imgs[{lunch:'i_food',bomb:'i_bomb',magnet:'i_magnet',crate:'i_box'}[it.k]];if(ii&&ii.complete&&!(it.t0!=null&&S.clock-it.t0>25&&Math.floor(S.clock*8)%2)){const z=it.k==='crate'?38:30,bb=Math.sin((S.clock||0)*4+it.x)*2;cx.drawImage(ii,it.x-z/2,it.y-z/2+bb,z,z)}}
+  for(const it of S.items){const ii=imgs[{lunch:'i_food',bomb:'i_bomb',magnet:'i_magnet',crate:imgs.i_env?'i_env':'i_box'}[it.k]];if(ii&&ii.complete&&!(it.t0!=null&&S.clock-it.t0>25&&Math.floor(S.clock*8)%2)){const z=it.k==='crate'?38:30,bb=Math.sin((S.clock||0)*4+it.x)*2;cx.drawImage(ii,it.x-z/2,it.y-z/2+bb,z,z)}}
   for(const e of S.en){if(!inView(e,80))continue;
     if(e.img&&imgs[e.img].complete){const t=S.clock||0,s=e.r*(e.boss?3.2:2.6),age=t-(e.born||0),pop=age<.25?Math.max(.05,age/.25):1;
       const fast=e.spd>70?1.6:1,ph=e.ph||0,step=Math.sin(t*9*fast+ph);
@@ -2074,6 +2074,15 @@ function initBossFx(){const _sb=startBoss;startBoss=function(){const old=S.en.fi
   const _dr=draw;draw=function(){_dr();try{bossOverlay()}catch(e){}};
   for(const k in W)if(W[k].evo&&!EVO[k])Object.defineProperty(EVO,k,{get:()=>evoIcon(k),enumerable:true,configurable:true})}
 initBossFx();
+/* 깜짝 보너스 봉투 (택배 상자 대신) */
+const BONUS=[['☕ 커피 쿠폰 당첨!',.6,30],['🍱 식대 지원금!',.8,26],['🚕 야근 택시비 정산!',1,18],['🎂 생일 상품권!',1.2,12],['🏆 이달의 칭찬 사원 상금!',1.6,9],['🧧 명절 떡값!',2,5]];
+function pickBonus(){let r=Math.random()*BONUS.reduce((a,b)=>a+b[2],0);for(const b of BONUS){r-=b[2];if(r<=0)return b}return BONUS[0]}
+(function(){const c=document.createElement('canvas');c.width=c.height=96;const g=c.getContext('2d');g.lineJoin='round';g.translate(48,52);g.rotate(-.12);
+  g.fillStyle='#f7f5ef';g.strokeStyle='#1d2333';g.lineWidth=5;g.beginPath();g.roundRect(-38,-26,76,52,6);g.fill();g.stroke();
+  g.fillStyle='#e9e4d6';g.beginPath();g.moveTo(-36,-24);g.lineTo(0,4);g.lineTo(36,-24);g.closePath();g.fill();g.lineWidth=4;g.stroke();
+  g.fillStyle='#d8322f';g.beginPath();g.arc(0,4,10,0,6.283);g.fill();g.lineWidth=3;g.stroke();g.fillStyle='#ffd23a';g.beginPath();g.arc(0,4,4,0,6.283);g.fill();
+  g.fillStyle='#2fa36b';g.strokeStyle='#1d2333';g.lineWidth=3;g.beginPath();g.roundRect(14,-40,30,18,4);g.fill();g.stroke();g.fillStyle='#1d2333';g.beginPath();g.arc(29,-31,4,0,6.283);g.fill();
+  IMG.i_env=c.toDataURL();const im=new Image();im.src=IMG.i_env;imgs.i_env=im})();
 
 </script>
 </body></html>
