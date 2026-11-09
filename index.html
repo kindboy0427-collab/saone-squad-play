@@ -261,6 +261,24 @@ canvas{display:block;width:100%;height:100%}
 .endBtn .eic{font:30px var(--display);color:#ffd84a}.endBtn .etx{flex:1;display:flex;flex-direction:column;text-align:left}.endBtn b{font:18px var(--display)}.endBtn small{font-size:12px;opacity:.85}
 .endBtn .ego{font:15px var(--display);background:#ffd84a;color:#1d2333;border:2px solid #141824;border-radius:10px;padding:4px 12px}.endBtn.lock{filter:grayscale(1);opacity:.6}
 .card.statc .sic{display:grid;place-items:center;font-size:30px;background:#2a3250;border-radius:12px;width:52px;height:52px;margin:0 auto}
+
+/* 일시정지: 스킬 칸 */
+.pstat{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;font-size:13px;background:#232a40;border:2px solid #141824;border-radius:10px;padding:6px 12px;width:100%;max-width:340px}.pstat b{font:14px var(--display);color:#ffd84a}
+.psk2{width:100%;max-width:340px;display:flex;flex-direction:column;gap:4px}.pskH{font:14px var(--display);color:#1d2333;background:#f2c230;border:2px solid #141824;border-radius:8px;padding:2px 10px;align-self:flex-start}
+.pgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.psl{position:relative;aspect-ratio:1;background:#2a3250;border:2px solid #141824;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.psl img{width:78%;height:78%;object-fit:contain}.psl.ev{border-color:#f2c230;box-shadow:0 0 8px #f2c230}.psl.empty{color:#4a5370;font:20px var(--display);border-style:dashed}
+.psl small{display:none}.psl .pips{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);display:flex;gap:1px;background:#141824;border-radius:4px;padding:1px 2px}
+.psl .pips b,.psl .pips u{width:5px;height:5px;border-radius:50%;background:#ffd84a;display:block}.psl .pips u{background:#4a5370}
+.psl .evb{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);font:9px var(--display);font-style:normal;background:#d8322f;color:#fff;border-radius:4px;padding:0 3px}
+/* 결과 보상 */
+.rwRow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:360px;margin:4px 0 6px}
+.rwT{width:72px;background:#2a3250;border:2px solid #141824;border-radius:12px;padding:6px 2px 4px;display:flex;flex-direction:column;align-items:center;gap:1px;opacity:0;transform:scale(.4);animation:rwPop .35s cubic-bezier(.3,1.6,.5,1) forwards;box-shadow:0 3px 0 rgba(0,0,0,.4)}
+.rwT img{width:34px;height:34px;object-fit:contain}.rwT .em{font-size:24px;position:relative;line-height:34px}.rwT .em i{position:absolute;right:-8px;bottom:-2px;font-size:13px;font-style:normal}
+.rwT b{font:15px var(--display);color:#ffd84a}.rwT small{font-size:10px;opacity:.8;text-align:center;line-height:1.1}
+@keyframes rwPop{to{opacity:1;transform:scale(1)}}
+.endMore{max-width:340px;width:100%}.endMore summary{cursor:pointer;text-align:center;opacity:.8;font-size:13px}
+.row2.bk{flex-direction:column;align-items:stretch;gap:6px}.row2.bk textarea{width:100%;box-sizing:border-box;font:11px monospace;border-radius:8px;border:2px solid #141824;padding:6px;background:#141824;color:#cfd3da;resize:vertical}
 </style>
 
 <div id="wrap">
@@ -355,7 +373,7 @@ canvas{display:block;width:100%;height:100%}
   <div class="overlay" id="tip"><img id="tipimg" alt="" style="width:96px"><h2 id="tiptitle"></h2><p id="tipmsg" style="max-width:30ch;text-align:center;line-height:1.6"></p><button class="btn" id="tipok">알겠습니다</button></div>
   <div class="overlay" id="paused"><h2>잠깐 쉬는 중</h2>
     <div class="pinfo" id="pinfo"></div>
-    <div class="psk"><b>업무 스킬</b><div id="pskW"></div><b>보조 스킬</b><div id="pskP"></div></div>
+    <div class="pstat" id="pstat"></div><div class="psk2"><div class="pskH">업무 스킬</div><div class="pgrid" id="pskW"></div><div class="pskH">보조 스킬</div><div class="pgrid" id="pskP"></div></div>
     <button class="btn" id="resume">다시 근무</button>
     <button class="btn ghost" id="comboBtnP">📖 스킬 조합표</button><button class="btn ghost" id="dexBtnP">😵 스트레스 도감</button>
     <div class="free"><button class="mini" id="sfxBtn">효과음 끄기</button><button class="mini" id="pSpeed">2배속</button><button class="mini" id="pSet">환경 설정</button></div>
@@ -387,13 +405,14 @@ canvas{display:block;width:100%;height:100%}
       <div class="row2"><div class="tx"><b>피해 숫자 표시</b></div><button class="btn" data-opt="nums"></button></div>
       <div class="row2"><div class="tx"><b>진동</b>피격 시 (안드로이드)</div><button class="btn" data-opt="vib"></button></div>
       <div class="row2"><div class="tx"><b>개인정보처리방침 · 확률 정보</b>출시 시 링크 연결</div></div>
+      <div class="row2 bk"><div class="tx"><b>💾 진행 기록 백업</b>폰을 바꾸거나 앱을 지워도 이어서 하기</div><textarea id="bkCode" rows="3" placeholder="백업 코드가 여기 나옵니다 / 불러올 코드를 여기에 붙여 넣기"></textarea><div class="free"><button class="btn" id="bkMake">백업 코드 만들기</button><button class="btn ghost" id="bkLoad">코드로 불러오기</button></div><p class="note" id="bkMsg"></p></div>
       <div class="row2"><div class="tx"><b>저장 데이터 초기화</b>모든 진행이 지워집니다</div><button class="btn ghost" id="resetSave">초기화</button></div>
       <div id="resetConfirm" hidden class="row2"><div class="tx"><b>정말 초기화할까요?</b>되돌릴 수 없습니다</div><button class="btn" id="resetYes">초기화</button><button class="btn ghost" id="resetNo">취소</button></div>
-      <p class="note" style="text-align:center">사원특공대 시험판 v0.1</p>
+      <p class="note" style="text-align:center">사원특공대 시험판 v0.9</p>
     </div><button class="btn" id="setClose">닫기</button></div>
   <div class="overlay" id="revive"><img alt="" id="revimg" style="width:110px"><h2>쓰러졌습니다…</h2><p>재입사권으로 다시 출근할까요? (판당 1회)</p>
     <button class="btn" id="revAd">재입사 · <span class="adl">광고</span></button><button class="btn ghost" id="revNo">오늘은 퇴근</button></div>
-  <div class="overlay" id="end"><img alt="" id="endimg" style="width:120px"><h2 id="endtitle"></h2><div class="stats" id="endstats"></div><button class="btn ghost" id="dbl">보상 2배 · <span class="adl">광고</span> (<span id="dblLeft">5</span>)</button><button class="btn" id="again">다시 출근</button></div>
+  <div class="overlay" id="end"><img alt="" id="endimg" style="width:120px"><h2 id="endtitle"></h2><div class="rwRow" id="rwRow"></div><details class="endMore"><summary>자세한 기록</summary><div class="stats" id="endstats"></div></details><button class="btn ghost" id="dbl">보상 2배 · <span class="adl">광고</span> (<span id="dblLeft">5</span>)</button><button class="btn" id="again">다시 출근</button></div>
 </div>
 
 <script>
@@ -1073,6 +1092,11 @@ function draw(){
 }
 let warnT;function flash(m){const el=$('warn');el.textContent=m;el.style.display='block';clearTimeout(warnT);warnT=setTimeout(()=>el.style.display='none',2200)}
 function loop(now){raf=requestAnimationFrame(loop);if(S&&S.state==='play')perfTick(now-last);let dt=Math.min(.05,(now-last)/1000);last=now;if(S.hitstop>0){S.hitstop-=dt;dt*=.15}if(S.state==='play')for(let i=0;i<S.speed&&S.state==='play';i++)step(dt);draw()}
+/* 결과 보상 타일: 원작처럼 아이콘이 하나씩 튀어나옴 */
+function renderRw(){const r=S.lastRw||{},T=[];if(r.gold)T.push([IMG.ui_coin,'월급',r.gold]);if(r.gem)T.push([IMG.ui_card,'포인트',r.gem]);if(r.key)T.push([IMG.ui_stamp,'결재 도장',r.key]);if(r.cert)T.push([IMG.ui_cert,'자격증',r.cert]);
+  for(const k in (r.mat||{}))T.push([null,MATN[k],r.mat[k],MATIC[k]]);
+  $('rwRow').innerHTML=T.map(([im,n,v,em],i)=>`<div class="rwT" style="animation-delay:${.15+i*.12}s">${im?`<img src="${im}" alt="">`:`<span class="em">📜<i>${em}</i></span>`}<b>${typeof v==='number'?kfmt(v):v}</b><small>${n}</small></div>`).join('')||'<p class="note">보상 없음</p>';
+  T.forEach((_,i)=>setTimeout(()=>sfx('coin'),150+i*120))}
 function end(win){S.state='end';$('revive').style.display='none';if(SV.dblDay!==today()){SV.dblDay=today();SV.dbl=5}setTimeout(()=>{$('dbl').disabled=!S.reward;$('dblLeft').textContent=SV.dbl},0);$('pause').hidden=true;$('spdBtn').hidden=true;$('comboBtn').hidden=true;$('end').style.display='flex';$('endimg').src=win?IMG.hero_win:IMG.hero_lose;
   if(S.endless){const r=SV.endBest||{t:0};SV.endNew=S.gt>r.t;if(SV.endNew)SV.endBest={t:Math.floor(S.gt),k:S.kills,lv:S.lv}}
   else if(!S.tm){SV.best=SV.best||{};SV.best[S.ci]=Math.max(SV.best[S.ci]||0,Math.floor(S.gt))}
@@ -1082,7 +1106,7 @@ function end(win){S.state='end';$('revive').style.display='none';if(SV.dblDay!==
   const matG=S.tm&&!S.endless?{}:addMat(S.endless?1+Math.floor(S.gt/120):win?2+S.ci:1);extra=[extra,matTxt(matG)].filter(Boolean).join(' · ');SV.gold+=S.gold;SV.gem+=gem;SV.key+=key;if(key)SV.keyCh=S.ci+1;S.reward={gold:S.gold,gem,key};passXp(Math.floor(S.kills/10)+(win?60:10));cnt('kill',S.kills);if(win&&!S.tm)cnt('win');addAexp(S.kills+(win?100*(S.ci+1):0));saveSV();
   $('endtitle').textContent=S.endless?(SV.endNew?'♾ 신기록!':'♾ 무한 야근 종료'):win?'칼퇴 성공!':'오늘은 야근…';
   const m=Math.floor(S.gt/60),s=Math.floor(S.gt%60);
-  $('endstats').innerHTML=`<span>챕터</span><span>${S.endless?'♾ 무한 야근':(S.ci+1)+'. '+S.C.name}</span>${S.endless?`<span>최고 기록</span><span>${Math.floor(SV.endBest.t/60)}분 ${SV.endBest.t%60}초</span>`:''}<span>근무 시간</span><span>${m}분 ${s}초</span><span>처리한 업무</span><span>${S.kills}</span><span>레벨</span><span>${S.lv}</span><span>받은 월급</span><span>${S.gold}</span><span>이긴 상사</span><span>${S.endless?S.bi+'명':S.bi+' / '+S.C.bosses.length}</span><span>법인카드 포인트</span><span>+${gem}</span><span>결재 도장</span><span>+${key}</span>${cert?`<span>자격증</span><span>+${cert}</span>`:''}${extra?`<span>장비 줍줍</span><span>${extra}</span>`:''}`}
+  S.lastRw={gold:S.gold,gem,key,cert,mat:typeof matG!=='undefined'?matG:{}};$('endstats').innerHTML=`<span>챕터</span><span>${S.endless?'♾ 무한 야근':(S.ci+1)+'. '+S.C.name}</span>${S.endless?`<span>최고 기록</span><span>${Math.floor(SV.endBest.t/60)}분 ${SV.endBest.t%60}초</span>`:''}<span>근무 시간</span><span>${m}분 ${s}초</span><span>처리한 업무</span><span>${S.kills}</span><span>레벨</span><span>${S.lv}</span><span>받은 월급</span><span>${S.gold}</span><span>이긴 상사</span><span>${S.endless?S.bi+'명':S.bi+' / '+S.C.bosses.length}</span><span>법인카드 포인트</span><span>+${gem}</span><span>결재 도장</span><span>+${key}</span>${cert?`<span>자격증</span><span>+${cert}</span>`:''}${extra?`<span>장비 줍줍</span><span>${extra}</span>`:''}`;renderRw()}
 // ── 게임 밖: 저장·재화·장비·결재함 (원본 규칙: 커피 5/판, 시간당 3, 최대 60 / S급 확률·천장) ──
 const SLOTS=[['tool','업무 도구'],['hair','헤어'],['hand','손'],['body','복장'],['waist','허리'],['feet','신발']];
 const EQ={keyboard:['tool','기계식 키보드'],pen2:['tool','고급 볼펜'],laptop:['tool','노트북'],wax:['hair','헤어 왁스'],spray:['hair','헤어 스프레이'],comb:['hair','단정한 빗'],
@@ -1453,8 +1477,11 @@ function saveOpt(){try{localStorage.setItem('sw_opt',JSON.stringify(OPT))}catch(
 function renderOpt(){document.querySelectorAll('[data-opt]').forEach(b=>{const k=b.dataset.opt,on=k==='sfx'?SFXON:OPT[k];b.textContent=on?'켜짐':'꺼짐';b.classList.toggle('ghost',!on)})}
 function openSettings(){renderOpt();$('resetConfirm').hidden=true;$('settings').style.display='flex'}
 function renderPause(){const m=Math.floor(S.gt/60),sc=Math.floor(S.gt%60);$('pinfo').textContent=`${S.C.name} · ${m}분 ${sc}초 · LV ${S.lv} · 처리 ${S.kills} · 월급 ${S.gold}`;
-  $('pskW').innerHTML=Object.keys(S.w).map(k=>{const ev=S.evo[k];const ic=(ev?EVO[k]:ICO[k]);return `<span class="sk${ev?' ev':''}">${ic&&IMG[ic]?`<img src="${IMG[ic]}" alt="">`:''}${ev?W[k].evo.name:W[k].name} ${ev?'진화':'Lv'+S.w[k]}</span>`}).join('')||'없음';
-  $('pskP').innerHTML=Object.keys(S.ps).map(k=>`<span class="sk">${ICO[k]&&IMG[ICO[k]]?`<img src="${IMG[ICO[k]]}" alt="">`:''}${P[k].name} Lv${S.ps[k]}</span>`).join('')||'없음';
+  const pip=(n,ev)=>ev?'<i class="evb">진화</i>':`<i class="pips">${'<b></b>'.repeat(n)}${'<u></u>'.repeat(5-n)}</i>`;
+  const wk=Object.keys(S.w),pk=Object.keys(S.ps);
+  $('pskW').innerHTML=Array.from({length:6},(_,i)=>{const k=wk[i];if(!k)return '<div class="psl empty">+</div>';const ev=S.evo[k],ic=ev?EVO[k]:ICO[k];return `<div class="psl${ev?' ev':''}" title="${ev?W[k].evo.name:W[k].name}"><img src="${IMG[ic]||''}" alt="">${pip(S.w[k],ev)}<small>${ev?W[k].evo.name:W[k].name}</small></div>`}).join('');
+  $('pskP').innerHTML=Array.from({length:6},(_,i)=>{const k=pk[i];if(!k)return '<div class="psl empty">+</div>';return `<div class="psl p"><img src="${IMG[ICO[k]]||''}" alt="">${pip(S.ps[k],0)}<small>${P[k].name}</small></div>`}).join('');
+  $('pstat').innerHTML=`<span>⚔ 공격력 <b>${Math.round(S.atk)}</b></span><span>❤ 체력 <b>${Math.ceil(S.hp)}/${Math.round(S.hpMax)}</b></span><span>🛡 방어 <b>${Math.round((S.def||0)+SB().def)}%</b></span><span>💚 회복 <b>${S.breg||0}</b></span>`;
   $('pSpeed').textContent=speedOK()?`배속 ${S.speed}x → ${S.speed>=2?1:2}x`:'배속 (계약 전용)';$('quitConfirm').hidden=true}
 function spdUI(){const b=$('spdBtn');if(!b||!S)return;if(S.speed>2)S.speed=2;b.textContent=S.speed>1?'2x':'1x';b.classList.toggle('on',S.speed>1);b.style.opacity=speedOK()?1:.55}
 function toggleSpeed(){if(!speedOK()){if(S.speed>1)S.speed=1;spdUI();return toast('2배속은 인턴 기간(첫 7일)·계약직·정규직만 쓸 수 있습니다')}S.speed=S.speed>=2?1:2;$('fast').checked=S.speed>1;spdUI();sfx('pick')}
@@ -1483,7 +1510,12 @@ function bootSeq(){const B=$('boot'),T=$('title');if(!B)return;$('bootHero').src
     if(pr<1)return requestAnimationFrame(tick);B.classList.add('fade');setTimeout(()=>{B.style.display='none'},400);T.style.display='flex'};tick();
   const go=()=>{acInit();try{if(AC&&AC.state==='suspended')AC.resume()}catch(e){}sfx('lvup');T.classList.add('fade');setTimeout(()=>{T.style.display='none'},380)};
   T.addEventListener('pointerup',go,{once:true})}
-function initMeta4(){$('chPrev').onclick=()=>{SV.selCh=Math.max(0,selCh()-1);saveSV();renderChapters()};$('chNext').onclick=()=>{SV.selCh=Math.min(CH.length-1,selCh()+1);saveSV();renderChapters()};$('goWork').onclick=goWork;$('goEndless').onclick=startEndless;$('goBag2').onclick=openBag;$('goDex').onclick=openDex;$('goCombo').onclick=openCombo;
+/* 저장 백업: 기기를 바꿔도 이어서 하도록 진행 기록을 코드로 내보내고 불러오기 */
+function mkBackup(){const d={v:1,sv:SV,cl:cleared,t:Date.now()};const j=JSON.stringify(d);return 'SW1'+btoa(unescape(encodeURIComponent(j)))}
+function loadBackup(code){try{code=code.trim();if(!code.startsWith('SW1'))throw 0;const d=JSON.parse(decodeURIComponent(escape(atob(code.slice(3)))));if(!d.sv||typeof d.sv!=='object')throw 0;
+  localStorage.setItem('sw_save',JSON.stringify(d.sv));localStorage.setItem('sw_cleared',String(d.cl||0));return true}catch(e){return false}}
+function initMeta4(){$('bkMake').onclick=()=>{const c=mkBackup();$('bkCode').value=c;$('bkMsg').textContent='코드를 복사해서 카톡 나에게 보내기 등에 보관하세요 ('+(c.length/1024).toFixed(0)+'KB)';$('bkCode').select();try{navigator.clipboard.writeText(c).then(()=>$('bkMsg').textContent='✅ 복사했습니다. 카톡 나와의 채팅 등에 붙여 넣어 보관하세요').catch(()=>{})}catch(e){}};
+  $('bkLoad').onclick=()=>{const v=$('bkCode').value;if(!v.trim()){$('bkMsg').textContent='위 칸에 백업 코드를 붙여 넣은 뒤 누르세요';return}if(loadBackup(v)){$('bkMsg').textContent='✅ 불러왔습니다. 다시 시작합니다…';setTimeout(()=>location.reload(),700)}else $('bkMsg').textContent='❌ 코드가 올바르지 않습니다. 처음부터 끝까지 빠짐없이 붙여 넣었는지 확인하세요'};$('chPrev').onclick=()=>{SV.selCh=Math.max(0,selCh()-1);saveSV();renderChapters()};$('chNext').onclick=()=>{SV.selCh=Math.min(CH.length-1,selCh()+1);saveSV();renderChapters()};$('goWork').onclick=goWork;$('goEndless').onclick=startEndless;$('goBag2').onclick=openBag;$('goDex').onclick=openDex;$('goCombo').onclick=openCombo;
   $('pcHero').src=IMG.hero_shirt;$('ctI1').src=IMG.hero_shirt;$('ctI2').src=IMG.hero_suit||IMG.hero_shirt;$('ctI3').src=IMG.hero_exec||IMG.hero_suit;$('sb_att').src=IMG.ui_stamp;$('sb_pat').src=IMG.ui_work;$('sb_carn').src=IMG.ui_cert;$('sb_bag').src=IMG.i_box;$('sb_dex').src=IMG.mon_01n||IMG.mon_01;$('goCof').src=IMG.ui_coffee;document.querySelectorAll('.res .plus').forEach(b=>b.onclick=e=>{e.stopPropagation();askBuy(b.dataset.buy)});addTopBacks();$('comboBtn').onclick=openCombo;$('comboBtnP').onclick=openCombo;$('dexBtnP').onclick=openDex;$('dexClose').onclick=()=>{$('dex').style.display='none';if(S&&S._dexPaused){S._dexPaused=0;S.state='play';last=performance.now()}};$('comboClose').onclick=()=>{$('combo').style.display='none';if(S&&S._comboPaused){S._comboPaused=0;S.state='play';last=performance.now()}};$('roulskip').onclick=()=>{S.roulSkip=1};renderProb();$('spdBtn').onclick=toggleSpeed;
   $('gearBtn').onclick=openSettings;$('pSet').onclick=openSettings;$('setClose').onclick=()=>{$('settings').style.display='none'};
   document.querySelectorAll('[data-opt]').forEach(b=>b.onclick=()=>{const k=b.dataset.opt;if(k==='sfx'){SFXON=!SFXON;try{localStorage.setItem('sw_sfx',SFXON?'1':'0')}catch(e){}if(SFXON)acInit()}else{OPT[k]=OPT[k]?0:1;if(k==='bgm'&&OPT.bgm)acInit()}saveOpt();renderOpt();$('sfxBtn').textContent=SFXON?'효과음 끄기':'효과음 켜기'});
