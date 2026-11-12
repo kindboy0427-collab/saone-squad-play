@@ -652,7 +652,7 @@ function hurtMe(d,swarm){if(S.p.hurt>0)return;const dd=d*(1-.1*L('mental'))*(1-(
 function shoot(o){S.bul.push({mine:1,life:1.6,r:6,pierce:0,hitset:new Set(),...o})}
 
 // 테스트 버전: 커피 무한 (출시 전 false로 바꿀 것)
-const TEST_INF=true;
+const TEST_INF=false;
 // ── 밸런스 조절값 (11/6 대표 피드백: 너무 쉬움) ──
 const BAL={enemyHp:1.8,enemySpd:1.05,weaponCd:1.25,contact:1.1}; // 11/6 13시: 너무 어렵다 → 중간값
 // ── 처치 파편 효과 (원본의 처치 6~8프레임 대신, 몬스터 재질별 파편을 코드로) ──
@@ -982,6 +982,10 @@ function levelUp(){$('luTitle').textContent='업무 스킬 선택';if(S.endless&
     b.onclick=()=>{apply(o);$('levelup').style.display='none';S.state='play';last=performance.now();if(S.extraPicks>0){S.extraPicks--;levelUp()}};c.appendChild(b);
   }
   if(S.reroll>0){const r=document.createElement('button');r.className='btn ghost';r.style.gridColumn='1/-1';r.textContent='눈치: 다시 뽑기 (1회)';r.onclick=()=>{S.reroll--;levelUp()};c.appendChild(r)}
+  if(!S.adReroll){const r=document.createElement('button');r.className='btn ghost';r.style.gridColumn='1/-1';r.textContent='광고 보고 스킬 다시 뽑기 (판당 1회)';r.onclick=()=>{
+    if(S.adReroll||S.state!=='pick')return;
+    watchAd('스킬 다시 뽑기',()=>{if(S.adReroll||S.state!=='pick')return;S.adReroll=1;levelUp()});
+  };c.appendChild(r)}
 }
 function apply(o){
   if(o.t==='w')S.w[o.k]=(S.w[o.k]||0)+1;
@@ -1201,7 +1205,7 @@ function renderRw(){const r=S.lastRw||{},T=[];if(r.gold)T.push([IMG.ui_coin,'월
   $('rwRow').innerHTML=T.map(([im,n,v,em],i)=>`<div class="rwT" style="animation-delay:${.15+i*.12}s">${im?`<img src="${im}" alt="">`:`<span class="em">📜<i>${em}</i></span>`}<b>${typeof v==='number'?kfmt(v):v}</b><small>${n}</small></div>`).join('')||'<p class="note">보상 없음</p>';
   T.forEach((_,i)=>setTimeout(()=>sfx('coin'),150+i*120))}
 function end(win){S.state='end';$('revive').style.display='none';if(SV.dblDay!==today()){SV.dblDay=today();SV.dbl=5}setTimeout(()=>{$('dbl').disabled=!S.reward;$('dblLeft').textContent=SV.dbl},0);$('pause').hidden=true;$('spdBtn').hidden=true;$('comboBtn').hidden=true;$('end').style.display='flex';$('endimg').src=win?IMG.hero_win:IMG.hero_lose;
-  if(S.endless){const r=SV.endBest||{t:0};SV.endNew=S.gt>r.t;if(SV.endNew)SV.endBest={t:Math.floor(S.gt),k:S.kills,lv:S.lv}}
+  if(S.endless){const r=SV.endBest||{t:0};SV.endNew=S.gt>r.t;if(SV.endNew){SV.endBest={t:Math.floor(S.gt),k:S.kills,lv:S.lv};if(window.SaonePlatform?.submitScore)window.SaonePlatform.submitScore(SV.endBest.t).catch(err=>console.warn('Score submit',err))}}
   else if(!S.tm){SV.best=SV.best||{};SV.best[S.ci]=Math.max(SV.best[S.ci]||0,Math.floor(S.gt))}
   if(win&&S.ci+1>cleared){cleared=S.ci+1;SV.selCh=S.ci+1<CH.length?S.ci+1:S.ci;try{localStorage.setItem('sw_cleared',cleared)}catch(e){}}
   S.reward=null;S.gold=Math.round(S.gold*(1+(SB().gold||0)));let gem=win?(S.ci<5?20*(S.ci+1):100+8*(S.ci-4))+5*S.bi:5*S.bi,key=win&&S.ci+1>(SV.keyCh||0)?1:0,cert=0,extra='';if(S.endless){gem=Math.floor(S.gt/60)*4+5*S.bi;key=0}else if(S.tm){gem=0;key=0;if(win&&!(SV.tr||{})[S.tm.id]){SV.tr=SV.tr||{};SV.tr[S.tm.id]=1;cert=S.tm.rw;SV.cert=(SV.cert||0)+cert}}
@@ -1238,7 +1242,7 @@ function tickCof(){const per=3600000/3,n=Math.floor((Date.now()-SV.cofT)/per);if
 function eqStats(){let a=0,h=0;for(const k in SV.eq){const it=SV.eq[k];if(!it)continue;const g=GR[it.g],m=(1+.2*(it.st||0))*lvMul(it);if(EQ[it.k][0]==='tool')a+=g.a*1.5*m;else{a+=g.a*.2*m;h+=g.h*m}}
   const cm=PR('care')?1.05:1,bt=bprTotal(),sb=setBonus();return{atk:Math.round((38*(1+a*cm/100)+bt.atk)*(1+sb.atk)),hp:Math.round((125+h*cm+bt.hp)*(1+sb.hp))}}
 function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',1800)}
-const nowT=()=>Date.now()+((SV&&SV.shift)||0);
+const nowT=()=>Date.now();
 function today(){return new Date(nowT()).toDateString()}
 const kfmt=n=>n>=1e8?(n/1e8).toFixed(n>=1e9?0:1).replace(/\.0$/,'')+'억':n>=1e5?(n/1e4).toFixed(n>=1e6?0:1).replace(/\.0$/,'')+'만':n.toLocaleString();
 function renderTop(){tickCof();$('r_gold').textContent=kfmt(SV.gold);$('r_gem').textContent=kfmt(SV.gem);$('r_cof').textContent=TEST_INF?'∞':SV.cof+'/'+cofCap();
@@ -1451,7 +1455,7 @@ const CARN=[[['run',1,'출근 1회',30],['kill',300,'업무 300개 처리',40],[
  [['run',10,'출근 10회',70],['win',3,'칼퇴 3회',80],['quick',1,'빠른 외근 1회',90]],
  [['kill',10000,'업무 10,000개 처리',150],['win',5,'칼퇴 5회',200],['pull',10,'나에게 주는 선물 10회',300]]];
 let cday=0;
-const carnDay=()=>Math.floor((Date.now()+(SV.shift||0)-(SV.carnT||Date.now()))/86400000);
+const carnDay=()=>Math.floor((Date.now()-(SV.carnT||Date.now()))/86400000);
 function carnClaimable(){if(carnDay()>=7)return 0;let n=0;CARN.forEach((ms,d)=>{if(d>carnDay())return;ms.forEach((m,i)=>{if(!(SV.cm||{})[d+'-'+i]&&((SV.c||{})[m[0]]||0)>=m[1])n++})});return n}
 /* 7일 적응기 중간 보상(원작: 100~1200 상자) + 미션 '이동' 버튼 */
 const MEDMS=[[100,'포인트 50',()=>SV.gem+=50],[200,'결재 도장 1',()=>SV.key+=1],[300,'월급 10,000',()=>SV.gold+=10000],[400,'매뉴얼 5',()=>addMat(5)],[500,'포인트 100',()=>SV.gem+=100],[1200,'결재 도장 3',()=>SV.key+=3]];
@@ -1476,7 +1480,7 @@ function initMeta2(){
   $('quickCof').onclick=()=>{if(SV.qc<1)return toast('오늘 빠른 외근을 모두 썼습니다');tickCof();if(SV.cof<15&&!TEST_INF)return toast('커피가 부족합니다');if(!TEST_INF)SV.cof-=15;SV.qc--;const t=giveHours(5);cnt('quick');saveSV();renderPatrol();renderTop();toast(t)};
   $('rw700').onclick=()=>{SV.cr=SV.cr||{};SV.cr[700]=1;SV.inv.push({k:'ss_body',g:5});saveSV();renderCarn();toast('팀장 복장 「보험 든 정장」 획득')};
   $('rw1500').onclick=()=>{SV.cr=SV.cr||{};SV.cr[1500]=1;SV.inv.push({k:'ss_tool',g:5});saveSV();renderCarn();toast('팀장 업무 도구 「종신 계약 레이저 프레젠터」 획득')};
-  $('nextDay').onclick=()=>{SV.shift=(SV.shift||0)+86400000;saveSV();cday=Math.min(6,carnDay());renderCarn()};
+  $('nextDay').hidden=true; // release: prohibit fake date advancement
   setInterval(()=>{if($('start').style.display==='none')return;renderBadges();if($('v_patrol').classList.contains('on'))renderPatrol()},5000)}
 // ── 인턴(첫 7일 광고 없음·2배속) → 계약직(30일)·정규직(1년): 광고 없음+2배속+일급, 만료 시 광고 복귀 / 신입 교육 받기(=광고 제거, 영구 2,000원, 광고만) / 출근 도장 ──
 const WEEK=7*86400000;
@@ -1486,7 +1490,95 @@ const adFree=()=>firstWeek()||!!SV.noAds||!!contract();
 const cofCap=()=>{const c=contract();return c?(c.type==='r'?100:c.type==='c'?80:60):60};
 const CTN={a:'단기 알바',c:'계약직',r:'정규직'},CTRANK={a:1,c:2,r:3};
 const speedOK=()=>firstWeek()||!!contract();
-function watchAd(label,cb){if(adFree()){cb();toast(label+' (광고 없이 지급)')}else{cb();toast('(광고 시청 자리) '+label)}}
+window.saoneNotify=m=>{try{toast(m)}catch(e){console.info(m)}};
+function watchAd(label,cb){
+  if(adFree()){cb();toast(label+' (광고 없이 지급)');return}
+  if(!window.SaonePlatform || typeof window.SaonePlatform.reward!=='function'){
+    toast('광고 SDK 연결이 필요합니다. 보상은 지급되지 않았습니다.');return;
+  }
+  window.SaonePlatform.reward(label,cb).catch(e=>console.error('Rewarded ad error',e));
+}
+/** Purchase success is never simulated. Keep a local orderId ledger as a duplicate-grant guard.
+ * Production-grade cross-device entitlement and refund validation requires a partner backend. */
+function saonePurchase(sku,grant){
+  if(!window.SaonePlatform || typeof window.SaonePlatform.purchase!=='function'){
+    toast('토스 결제를 사용할 수 없습니다.');return;
+  }
+  window.SaonePlatform.purchase(sku,async(orderId,productSku)=>{
+    if(!orderId || productSku!==sku)return false;
+    SV.tossOrders=SV.tossOrders||{};
+    if(SV.tossOrders[orderId])return SV.tossOrders[orderId]===sku;
+    grant();SV.tossOrders[orderId]=sku;
+    saveSV();renderTop();return true;
+  }).catch(e=>console.error('IAP error',e));
+}
+/** Idempotent best-effort recovery for paid but ungranted Toss orders. */
+/** Only native Toss refund reconciliation can invoke this path. A backend ledger is required for authoritative enforcement. */
+window.saoneRevokePurchase=function(orderId,sku){
+  if(!orderId||!sku||!SV.tossOrders||SV.tossOrders[orderId]!==sku)return false;
+  SV.tossRefundedOrders=SV.tossRefundedOrders||{};
+  if(SV.tossRefundedOrders[orderId])return true;
+  SV.tossRefundedOrders[orderId]=sku;
+  const stillOwned=prefix=>Object.entries(SV.tossOrders).some(([id,s])=>id!==orderId&&s.startsWith(prefix)&&!SV.tossRefundedOrders[id]);
+  if(sku==='saone.hr.n'&&!stillOwned('saone.hr.n'))SV.noAds=0;
+  if(sku==='saone.package.fund'&&!stillOwned('saone.package.fund'))SV.fund=0;
+  if(sku==='saone.package.dept'&&!stillOwned('saone.package.dept'))SV.dept=0;
+  if(sku.startsWith('saone.skin.')&&!stillOwned(sku)){
+    const skinId=sku.slice('saone.skin.'.length);
+    if(SV.skins)delete SV.skins[skinId];
+    if(SV.skin===skinId)SV.skin='';
+  }
+  if(sku.startsWith('saone.pet.')&&!stillOwned(sku)){
+    const key=sku.slice('saone.pet.'.length);
+    if(SV.pets)delete SV.pets[key];
+    if(SV.pet===key)SV.pet='';
+  }
+  if(sku.startsWith('saone.pass.')&&!stillOwned('saone.pass.'))passState().tier=0;
+  if(/^saone\.hr\.[acr]$/.test(sku)&&!stillOwned('saone.hr.'))SV.ct=null;
+  // Consumable refunds are flagged for manual reconciliation because items may
+  // already have been spent; confiscating unrelated legitimate earnings is unsafe.
+  SV.refundReview=SV.refundReview||{};
+  SV.refundReview[orderId]={sku,at:Date.now()};
+  saveSV();renderTop();
+  toast('환불된 구매 내역이 반영됐습니다. 사용 완료된 아이템은 고객지원 확인이 필요할 수 있습니다.');
+  return true;
+};
+window.saoneRestoreGrant=function(orderId,sku){
+  if(!orderId || typeof sku!=='string' || !sku.startsWith('saone.'))return false;
+  if(SV.tossRefundedOrders?.[orderId])return false;
+  SV.tossOrders=SV.tossOrders||{};
+  if(SV.tossOrders[orderId])return SV.tossOrders[orderId]===sku;
+  let ok=false;
+  if(sku.startsWith('saone.hr.')){
+    const t=sku.slice('saone.hr.'.length);
+    if(['a','c','r','n'].includes(t)){grantHr(t);ok=true}
+  }else if(sku.startsWith('saone.package.')){
+    const t=sku.slice('saone.package.'.length);
+    if(t==='welcome'&&!SV.welcome){SV.welcome=1;SV.gem+=300;SV.inv.push({k:rk(),g:3});SV.cof+=30;SV.key+=3;ok=true}
+    if(t==='fund'){SV.fund=1;ok=true}
+    if(t==='dept'){SV.dept=1;ok=true}
+  }else if(sku.startsWith('saone.points.')){
+    const price=Number(sku.slice('saone.points.'.length));
+    const packs={800:60,4200:330,8400:700,23100:2000,48300:4300,83300:7600};
+    if(Object.hasOwn(packs,price)){
+      SV.gp=SV.gp||{};const first=!SV.gp[price];SV.gp[price]=1;
+      SV.gem+=packs[price]*(first?2:1);ok=true;
+    }
+  }else if(sku.startsWith('saone.pass.')){
+    const t=sku.slice('saone.pass.'.length);const p=passState();
+    if(t==='regular'){p.tier=Math.max(1,p.tier);ok=true}
+    if(t==='premium'||t==='upgrade'){p.tier=2;ok=true}
+  }else if(sku.startsWith('saone.skin.')){
+    const id=sku.slice('saone.skin.'.length),skin=SKINS.find(s=>s.id===id);
+    if(skin){SV.skins=SV.skins||{};SV.skins[id]=1;SV.skin=id;ok=true}
+  }else if(sku.startsWith('saone.pet.')){
+    const k=sku.slice('saone.pet.'.length),pet=PETS.find(p=>p.k===k&&p.paid);
+    if(pet){SV.pets=SV.pets||{};SV.pets[k]=1;SV.pet=k;ok=true}
+  }
+  if(!ok)return false;
+  SV.tossOrders[orderId]=sku;
+  saveSV();renderTop();return true;
+};
 const ATT=[['ui_card','포인트 100',()=>SV.gem+=100],['ui_coffee','커피 30',()=>SV.cof=Math.min(99,SV.cof+30)],['ui_stamp','결재 도장 2',()=>SV.key+=2],
  ['ui_coin','월급 5,000',()=>SV.gold+=5000],['ui_card','포인트 200',()=>SV.gem+=200],['ui_cert','자격증 2',()=>SV.cert=(SV.cert||0)+2],['i_box','대리 장비 1',()=>SV.inv.push({k:rk(),g:2})]];
 function attLabel(){}
@@ -1501,10 +1593,11 @@ function renderPerk(){const left=Math.ceil((WEEK-(nowT()-SV.firstT))/86400000);
   const ok=speedOK();$('fast').disabled=!ok;if(!ok)$('fast').checked=false;$('fastTx').textContent=ok?'2배속':'2배속 (계약직·정규직 전용)';
   document.querySelectorAll('.adl').forEach(e=>e.textContent=adFree()?'무료':'광고');
   $('noAdsRow').hidden=!!SV.noAds;$('hrNow').textContent=c?`현재: ${CTN[c.type]} (${cl}일 남음) · 구매하면 기간이 연장됩니다`:firstWeek()?`현재: 인턴 (${left}일 남음)`:'현재: 계약 없음';$('attBadge').innerHTML=attReady()?'<span class="dot"></span>':''}
-function buy(t){if(t==='n'){SV.noAds=1;saveSV();renderTop();$('hrModal').hidden=true;return toast('신입 교육 수료! 이제 광고 없이 보상을 받습니다 (시험판)')}
+function buy(t){return saonePurchase('saone.hr.'+t,()=>grantHr(t))}
+function grantHr(t){if(t==='n'){SV.noAds=1;saveSV();renderTop();$('hrModal').hidden=true;return toast('신입 교육 수료!')}
   const days=t==='r'?365:t==='a'?7:30,cur=contract(),base=Math.max(nowT(),cur?SV.ct.until:0);
   SV.ct={type:cur&&CTRANK[cur.type]>CTRANK[t]?cur.type:t,until:base+days*86400000};SV.ctAsk=SV.ct.until;saveSV();$('hrModal').hidden=true;renderTop();
-  toast(t==='r'?'정규직 전환을 축하합니다! (시험판)':CTN[t]+' 계약 완료 (시험판)');setTimeout(dailyPay,1900)}
+  toast(t==='r'?'정규직 전환을 축하합니다!':CTN[t]+' 계약 완료');setTimeout(dailyPay,1900)}
 function dailyPay(){const c=contract();if(!c||SV.payDay===today())return;SV.payDay=today();const v={a:60,c:100,r:150}[c.type];SV.gem+=v;saveSV();toast(`${CTN[c.type]} 일급 · 포인트 +${v}`)}
 function hrCheck(){if(firstWeek()||contract())return;
   const exp=SV.ct&&SV.ct.until<=nowT()&&SV.ctAsk===SV.ct.until;
@@ -1552,10 +1645,28 @@ function renderPk(){const B=$('pkBox');const p=passState(),plv=Math.floor(p.xp/P
   B.innerHTML=html;
   B.querySelectorAll('[data-pv]').forEach(b=>b.onclick=()=>{pkView=b.dataset.pv;renderPk()});
   B.querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{const t=b.dataset.pk;
-    if(t==='welcome'){SV.welcome=1;SV.gem+=300;SV.inv.push({k:rk(),g:3});SV.cof+=30;SV.key+=3;toast('신입 환영 선물 세트 구매 (시험판)')}
-    if(t==='fund'){SV.fund=1;toast('승진 적금 가입 (시험판)')}if(t==='dept'){SV.dept=1;toast('칼퇴 수당 통장 개설 (시험판)')}saveSV();renderTop();renderPk()});
-  B.querySelectorAll('[data-gp]').forEach(b=>b.onclick=()=>{const w=+b.dataset.gp,g=+b.dataset.g;SV.gp=SV.gp||{};const first=!SV.gp[w];SV.gp[w]=1;SV.gem+=first?g*2:g;saveSV();renderTop();renderPk();toast(`포인트 +${(first?g*2:g).toLocaleString()} (시험판)`)});
-  B.querySelectorAll('[data-ps]').forEach(b=>b.onclick=()=>{p.tier=+b.dataset.ps;saveSV();renderPk();toast('성과급 패스 구매 (시험판)')});
+    if((t==='welcome'&&SV.welcome)||(t==='fund'&&SV.fund)||(t==='dept'&&SV.dept))return;
+    saonePurchase('saone.package.'+t,()=>{
+      if(t==='welcome'){SV.welcome=1;SV.gem+=300;SV.inv.push({k:rk(),g:3});SV.cof+=30;SV.key+=3}
+      if(t==='fund')SV.fund=1;
+      if(t==='dept')SV.dept=1;
+      saveSV();renderTop();renderPk();toast('구매 상품 지급 완료');
+    });
+  });
+  B.querySelectorAll('[data-gp]').forEach(b=>b.onclick=()=>{const w=+b.dataset.gp,g=+b.dataset.g;
+    saonePurchase('saone.points.'+w,()=>{
+      SV.gp=SV.gp||{};const first=!SV.gp[w];SV.gp[w]=1;
+      SV.gem+=first?g*2:g;saveSV();renderTop();renderPk();
+      toast(`포인트 +${(first?g*2:g).toLocaleString()}`);
+    });
+  });
+  B.querySelectorAll('[data-ps]').forEach(b=>b.onclick=()=>{
+    const tier=+b.dataset.ps;
+    if(tier<=p.tier)return;
+    saonePurchase('saone.pass.'+(tier===1?'regular':p.tier===1?'upgrade':'premium'),()=>{
+      p.tier=Math.max(p.tier,tier);saveSV();renderPk();toast('성과급 패스 구매 완료');
+    });
+  });
   B.querySelectorAll('[data-pskip]').forEach(b=>b.onclick=()=>{if(SV.gem<1000)return toast('포인트가 부족합니다');SV.gem-=1000;passXp(PXP*10);saveSV();renderTop();renderPk()});
   B.querySelectorAll('[data-pc]').forEach(b=>b.onclick=()=>{const[lv,tr]=b.dataset.pc.split('-').map(Number);const r=PREW(lv,tr);r[1]();p.cl[b.dataset.pc]=1;saveSV();renderTop();renderPk();toast(r[0]+' 받음')});
   B.querySelectorAll('[data-fd]').forEach(b=>b.onclick=()=>{SV.fundCl=SV.fundCl||{};SV.fundCl[b.dataset.fd]=1;SV.gem+=+b.dataset.v;saveSV();renderTop();renderPk()});
@@ -1615,7 +1726,7 @@ function bootSeq(){const B=$('boot'),T=$('title');if(!B)return;$('bootHero').src
   T.addEventListener('pointerup',go,{once:true})}
 /* 저장 백업: 기기를 바꿔도 이어서 하도록 진행 기록을 코드로 내보내고 불러오기 */
 function mkBackup(){const d={v:1,sv:SV,cl:cleared,t:Date.now()};const j=JSON.stringify(d);return 'SW1'+btoa(unescape(encodeURIComponent(j)))}
-function loadBackup(code){try{code=code.trim();if(!code.startsWith('SW1'))throw 0;const d=JSON.parse(decodeURIComponent(escape(atob(code.slice(3)))));if(!d.sv||typeof d.sv!=='object')throw 0;
+function loadBackup(code){if(window.SaonePlatform?.kind==='apps-in-toss')return false;try{code=code.trim();if(!code.startsWith('SW1'))throw 0;const d=JSON.parse(decodeURIComponent(escape(atob(code.slice(3)))));if(!d.sv||typeof d.sv!=='object')throw 0;
   localStorage.setItem('sw_save',JSON.stringify(d.sv));localStorage.setItem('sw_cleared',String(d.cl||0));return true}catch(e){return false}}
 function initMeta4(){$('bkMake').onclick=()=>{const c=mkBackup();$('bkCode').value=c;$('bkMsg').textContent='코드를 복사해서 카톡 나에게 보내기 등에 보관하세요 ('+(c.length/1024).toFixed(0)+'KB)';$('bkCode').select();try{navigator.clipboard.writeText(c).then(()=>$('bkMsg').textContent='✅ 복사했습니다. 카톡 나와의 채팅 등에 붙여 넣어 보관하세요').catch(()=>{})}catch(e){}};
   $('bkLoad').onclick=()=>{const v=$('bkCode').value;if(!v.trim()){$('bkMsg').textContent='위 칸에 백업 코드를 붙여 넣은 뒤 누르세요';return}if(loadBackup(v)){$('bkMsg').textContent='✅ 불러왔습니다. 다시 시작합니다…';setTimeout(()=>location.reload(),700)}else $('bkMsg').textContent='❌ 코드가 올바르지 않습니다. 처음부터 끝까지 빠짐없이 붙여 넣었는지 확인하세요'};$('chPrev').onclick=()=>{SV.selCh=Math.max(0,selCh()-1);saveSV();renderChapters()};$('chNext').onclick=()=>{SV.selCh=Math.min(CH.length-1,selCh()+1);saveSV();renderChapters()};$('goWork').onclick=goWork;$('goEndless').onclick=startEndless;$('goBag2').onclick=openBag;$('goDex').onclick=openDex;$('goCombo').onclick=openCombo;
@@ -1623,7 +1734,7 @@ function initMeta4(){$('bkMake').onclick=()=>{const c=mkBackup();$('bkCode').val
   $('gearBtn').onclick=openSettings;$('pSet').onclick=openSettings;$('setClose').onclick=()=>{$('settings').style.display='none'};
   document.querySelectorAll('[data-opt]').forEach(b=>b.onclick=()=>{const k=b.dataset.opt;if(k==='sfx'){SFXON=!SFXON;try{localStorage.setItem('sw_sfx',SFXON?'1':'0')}catch(e){}if(SFXON)acInit()}else{OPT[k]=OPT[k]?0:1;if(k==='bgm'&&OPT.bgm)acInit()}saveOpt();renderOpt();$('sfxBtn').textContent=SFXON?'효과음 끄기':'효과음 켜기'});
   $('resetSave').onclick=()=>{$('resetConfirm').hidden=false};$('resetNo').onclick=()=>{$('resetConfirm').hidden=true};
-  $('resetYes').onclick=()=>{try{localStorage.removeItem('sw_save');localStorage.removeItem('sw_cleared')}catch(e){}location.reload()};
+  $('resetYes').onclick=()=>{if(window.SaonePlatform?.kind==='apps-in-toss')return toast('유료 상품 보호를 위해 초기화는 지원하지 않습니다');try{localStorage.removeItem('sw_save');localStorage.removeItem('sw_cleared')}catch(e){}location.reload()};
   $('pSpeed').onclick=()=>{toggleSpeed();renderPause()};
   $('quitRun').onclick=()=>{$('quitConfirm').hidden=false};$('quitNo').onclick=()=>{$('quitConfirm').hidden=true};
   $('quitYes').onclick=()=>{$('paused').style.display='none';S.state='play';end(false)};$('eqClose').onclick=()=>{$('eqModal').hidden=true};$('roulok').onclick=roulDone;$('tipok').onclick=()=>{$('tip').style.display='none';S.state='play';last=performance.now()};const sb=$('sfxBtn');const st=()=>sb.textContent=SFXON?'효과음 끄기':'효과음 켜기';st();sb.onclick=()=>{SFXON=!SFXON;try{localStorage.setItem('sw_sfx',SFXON?'1':'0')}catch(e){}if(SFXON)acInit();st()};document.querySelectorAll('#shopTabs [data-st]').forEach(b=>b.onclick=()=>{shopTab=b.dataset.st;renderShopTab()});
@@ -1684,8 +1795,18 @@ function hubMissions(sub){dwRoll();const w=sub==='w',L=w?WMS:DMS,c=w?SV.wc:SV.dc
   const rows=L.map((m,i)=>{const v=Math.min(m[1],c[m[0]]||0),got=cl[i],ok=v>=m[1];const btn=got?'<button class="btn" disabled>완료</button>':ok?`<button class="btn" data-ms="${i}">받기</button>`:`<button class="btn go" data-go="${m[0]}">이동</button>`;
     return `<div class="row2 dmRow${got?' done':''}"><div class="tx"><b>${m[2]}</b><div class="mbar"><i style="width:${v/m[1]*100}%"></i></div><small>${v.toLocaleString()} / ${m[1].toLocaleString()}</small></div><span class="ptc">+${m[3]}</span>${btn}</div>`}).join('');
   return{t:'📋 업무 일지',tabs:[['d','오늘 업무'],['w','주간 보고']],html:`<div class="actBox"><div class="actTop"><span>${w?'이번 주':'오늘의'} 활동 점수 <b>${pt}</b> / ${max}</span><small>⏳ ${w?Math.floor(hh/24)+'일 '+hh%24+'시간':hh+'시간 '+mm+'분'} 뒤 초기화</small></div><div class="actBar"><i style="width:${Math.min(100,pt/max*100)}%"></i>${chests}</div></div>
-  <button class="btn allBtn" id="msAll">✔ 모두 받기</button><div class="list">${rows}</div><p class="note">${w?'주간 점수 = 매일 얻은 활동 점수 + 주간 미션 점수. 매주 월요일 0시에 초기화.':'매일 0시에 초기화됩니다. 활동 점수 100을 채우면 결재 도장!'}</p>`,
-  bind:B=>{B.querySelectorAll('[data-ms]').forEach(b=>b.onclick=()=>{if(claimMs(w,+b.dataset.ms)){sfx('pick');saveSV();renderHub()}});
+  <button class="btn allBtn" id="msAll">✔ 모두 받기</button>${!w&&DMS.every((m,i)=>cl[i])?`<button class="btn" id="msAdBonus" ${SV.msAdBonusDay===today()?'disabled':''}>${SV.msAdBonusDay===today()?'오늘 광고 보상 수령 완료':'광고 보고 오늘의 추가 보상 받기'}</button>`:''}<div class="list">${rows}</div><p class="note">${w?'주간 점수 = 매일 얻은 활동 점수 + 주간 미션 점수. 매주 월요일 0시에 초기화.':'매일 0시에 초기화됩니다. 활동 점수 100을 채우면 결재 도장!'}</p>`,
+  bind:B=>{const bonus=B.querySelector('#msAdBonus');
+    if(bonus)bonus.onclick=()=>{
+      if(SV.msAdBonusDay===today()||!DMS.every((m,i)=>SV.dcl[i]))return;
+      watchAd('오늘의 업무 보너스',()=>{
+        if(SV.msAdBonusDay===today())return;
+        SV.msAdBonusDay=today();
+        giveRw([['mat',3],['gold',3000]]);
+        saveSV();renderHub();toast('업무 매뉴얼 3 · 월급 3,000 지급');
+      });
+    };
+    B.querySelectorAll('[data-ms]').forEach(b=>b.onclick=()=>{if(claimMs(w,+b.dataset.ms)){sfx('pick');saveSV();renderHub()}});
     B.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{const f=MGO2[b.dataset.go]||MGO[b.dataset.go];closeHub();if(f)f()});
     B.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{const t=claimCh(w,+b.dataset.ch);if(t){sfx('lvup');toast('🎁 '+t);saveSV();renderHub()}else{const rw=CH.find(x=>x[0]===+b.dataset.ch)[1];toast('활동 점수 '+b.dataset.ch+' 보상: '+rw.map(([k,n])=>RWN[k][0]+' '+kfmt(n)).join(', '))}});
     $('msAll').onclick=()=>{let n=0;L.forEach((m,i)=>n+=claimMs(w,i));const got=[];CH.forEach(([p])=>{const t=claimCh(w,p);if(t)got.push(t)});if(!n&&!got.length){shake($('msAll'));toast('받을 보상이 없습니다');return}sfx('lvup');toast(`미션 ${n}개 완료`+(got.length?' · 상자 '+got.join(' / '):''));saveSV();renderHub()}}}}
@@ -1697,7 +1818,7 @@ const MAILS=[{id:'w1',from:'인사팀',t:'🎉 입사를 환영합니다!',b:'�
 const COUP={SAONE2026:[['gem',300],['key',3]],KALTOE:[['gold',30000],['cof',20]],WELCOME:[['gem',100],['mat',5]],MONDAY:[['cof',30]]};
 function seedMail(){SV.mail=SV.mail||[];SV.mseed=SV.mseed||{};MAILS.forEach(m=>{if(!SV.mseed[m.id]){SV.mseed[m.id]=1;SV.mail.unshift({...m,ts:nowT(),got:0})}})}
 function pushMail(from,t,b,rw){SV.mail=SV.mail||[];SV.mail.unshift({id:'m'+nowT()+Math.random().toString(36).slice(2,6),from,t,b,rw,ts:nowT(),got:0});if(SV.mail.length>60)SV.mail.length=60}
-function useCoupon(c){c=(c||'').trim().toUpperCase().replace(/\s/g,'');SV.cp=SV.cp||{};if(!c)return'쿠폰 번호를 입력하세요';if(!COUP[c])return'없는 쿠폰 번호입니다';if(SV.cp[c])return'이미 사용한 쿠폰입니다';SV.cp[c]=1;pushMail('운영팀','🎟 쿠폰 보상 ('+c+')','입력하신 쿠폰 보상이 도착했습니다.',COUP[c]);saveSV();return''}
+function useCoupon(c){if(window.SaonePlatform?.kind==='apps-in-toss')return '쿠폰 입력은 안전한 서버 검증 도입 후 지원합니다.';c=(c||'').trim().toUpperCase().replace(/\s/g,'');SV.cp=SV.cp||{};if(!c)return'쿠폰 번호를 입력하세요';if(!COUP[c])return'없는 쿠폰 번호입니다';if(SV.cp[c])return'이미 사용한 쿠폰입니다';SV.cp[c]=1;pushMail('운영팀','🎟 쿠폰 보상 ('+c+')','입력하신 쿠폰 보상이 도착했습니다.',COUP[c]);saveSV();return''}
 const mailNew=()=>(SV.mail||[]).filter(m=>!m.got&&m.rw&&m.rw.length).length;
 function hubMail(sub){seedMail();if(sub==='cp')return{t:'✉ 사내 메일함',tabs:[['in','받은 메일'],['cp','🎟 쿠폰 입력']],html:`<div class="cpBox"><p>쿠폰 번호를 입력하면 보상이 메일함으로 옵니다.</p><input id="cpIn" maxlength="20" placeholder="예: SAONE2026" autocomplete="off" autocapitalize="characters"><button class="btn" id="cpGo">확인</button><p class="cpMsg" id="cpMsg"></p></div><p class="note">쿠폰은 계정당 한 번씩만 쓸 수 있습니다. 새 쿠폰은 인스타그램과 사내 게시판에서 알려 드려요.</p>`,
   bind:()=>{$('cpGo').onclick=()=>{const e=useCoupon($('cpIn').value);if(e){$('cpMsg').textContent=e;shake($('cpGo'));return}sfx('lvup');$('cpIn').value='';toast('🎟 쿠폰 보상이 메일함에 도착했습니다');openHub('mail','in')}}};
@@ -1715,8 +1836,14 @@ function rankList(kind){const r=rnd(wkey()*31+(kind==='k'?7:1));const L=NPCN.map
   L.push({n:SV.nick||'신입사원',d:'우리 팀',me:1,v:kind==='t'?((SV.endBest||{}).t||0):CC('kill')});L.sort((a,b)=>b.v-a.v||(a.me?-1:1));return L}
 const myRank=kind=>rankList(kind).findIndex(x=>x.me)+1;
 const RKRW=[[1,[['gem',300],['key',2]]],[3,[['gem',200],['key',1]]],[10,[['gem',100]]],[99,[['gem',30]]]];
-function weeklyRankMail(){if(!(SV.endBest&&SV.endBest.t))return;const k=myRank('t');pushMail('경영지원팀','🏆 지난주 실적 랭킹 보상','지난주 무한 야근 실적 '+k+'위 보상입니다. 이번 주도 화이팅!',RKRW.find(([n])=>k<=n)[1])}
-function hubRank(sub){const k=sub==='k'?'k':'t',L=rankList(k),me=L.findIndex(x=>x.me);const val=x=>k==='t'?(x.v?fmtT(x.v):'기록 없음'):x.v.toLocaleString()+'개';
+function weeklyRankMail(){if(window.SaonePlatform?.kind==='apps-in-toss')return; if(!(SV.endBest&&SV.endBest.t))return;const k=myRank('t');pushMail('경영지원팀','🏆 지난주 실적 랭킹 보상','지난주 무한 야근 실적 '+k+'위 보상입니다. 이번 주도 화이팅!',RKRW.find(([n])=>k<=n)[1])}
+function hubRank(sub){
+ if(window.SaonePlatform?.kind==='apps-in-toss'){
+   const best=SV.endBest?.t||0;
+   return {t:'🏆 실시간 랭킹',tabs:[],html:`<div class="rkMe">내 최고 기록 <b>${best?fmtT(best):'기록 없음'}</b></div><p class="note">실제 토스 게임센터 기록을 조회합니다. 게임센터 사용 설정은 앱인토스 콘솔에서 활성화해야 합니다.</p><button class="btn" id="rkNativeOpen">토스 실시간 랭킹 보기</button>`,
+     bind:B=>{const button=B.querySelector('#rkNativeOpen');if(button)button.onclick=()=>window.SaonePlatform?.openLeaderboard?.()}};
+ }
+ const k=sub==='k'?'k':'t',L=rankList(k),me=L.findIndex(x=>x.me);const val=x=>k==='t'?(x.v?fmtT(x.v):'기록 없음'):x.v.toLocaleString()+'개';
   const medal=i=>i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
   const top=L.slice(0,3),pod=[1,0,2].map(i=>`<div class="pod p${i}"><div class="pAv">${top[i].me?`<img src="${IMG[heroImg()]}" alt="">`:['👔','💼','📎'][i]}</div><b>${escH(top[i].n)}</b><small>${val(top[i])}</small><div class="pBar">${medal(i)}</div></div>`).join('');
   const rows=L.map((x,i)=>`<div class="rkRow${x.me?' me':''}"><span class="rkN">${medal(i)}</span><div class="tx"><b>${escH(x.n)}${x.me&&SV.ttl?` <em>「${escH(SV.ttl)}」</em>`:''}</b><small>${x.d}</small></div><span class="rkV">${val(x)}</span></div>`).join('');
@@ -2136,7 +2263,7 @@ const PN=()=>Object.keys((SV&&SV.pets)||{}).length,SN=()=>Object.keys((SV&&SV.sk
 ACH.push(['c1','동료 사랑','사내 동료 3명 입사',PN,3,200,'인싸 사원'],['c2','드림팀','사내 동료 6명 입사',PN,6,600,'드림팀 팀장'],['c3','옷이 날개','스킨 1벌 보유',SN,1,100,'패션 새내기'],['c4','옷장 부자','스킨 8벌 보유',SN,8,500,'옷장 부자'],['c5','런웨이','스킨 24벌 모두 보유',SN,24,2000,'사내 패션왕'],
  ['c6','스트레스 연구가','도감 10종 기록',DX,10,150,'스트레스 연구가'],['c7','스트레스 박사','도감 25종 기록',DX,25,500,'스트레스 박사'],['c8','스트레스 백과사전','도감 39종 기록',DX,39,1200,'걸어 다니는 도감'],
  ['c9','야근 30분','무한 야근 30분 버티기',EB,1800,800,'철인'],['c10','임원 승진','계정 레벨 30',()=>SV.alv||1,30,800,'임원님'],['c11','사장 승진','계정 레벨 52',()=>SV.alv||1,52,1500,'사장님'],['c12','회장 승진','계정 레벨 60',()=>SV.alv||1,60,3000,'회장님'],
- ['c13','이름표','닉네임 정하기',()=>SV.nick?1:0,1,50,'이름 있는 사원'],['c14','쿠폰 사냥꾼','쿠폰 3개 사용',()=>Object.keys(SV.cp||{}).length,3,150,'쿠폰 사냥꾼'],['c15','랭커','무한 야근 랭킹 3위 안',()=>EB()&&myRank('t')<=3?1:0,1,500,'실적 랭커']);
+ ['c13','이름표','닉네임 정하기',()=>SV.nick?1:0,1,50,'이름 있는 사원'],['c14','쿠폰 사냥꾼','쿠폰 3개 사용',()=>Object.keys(SV.cp||{}).length,3,150,'쿠폰 사냥꾼'],['c15','랭커','실적 랭킹 3위 안 (오프라인 시험판)',()=>window.SaonePlatform?.kind==='apps-in-toss'?0:EB()&&myRank('t')<=3?1:0,1,500,'실적 랭커']);
 const ACAT=[['all','전체',()=>1],['work','출근·전투',a=>/출근|칼퇴|업무|상사|야근/.test(a[2])],['grow','성장',a=>/레벨|승진|장비|합성|시험/.test(a[2])],['col','수집·기타',a=>!/출근|칼퇴|업무|상사|야근|레벨|승진|장비|합성|시험/.test(a[2])]];
 HUBF.ach=function(sub){SV.ach=SV.ach||{};sub=sub||'all';const done=ACH.filter(a=>SV.ach[a[0]]).length,f=ACAT.find(c=>c[0]===sub)[2];
   const ord=ACH.filter(f).sort((a,b)=>((SV.ach[a[0]]?2:achOk(a)?0:1)-(SV.ach[b[0]]?2:achOk(b)?0:1))),p=done/ACH.length,grade=p>=.9?'S':p>=.65?'A':p>=.4?'B':p>=.15?'C':'D';
@@ -2206,8 +2333,15 @@ const _heroImg0=heroImg;
 const heroKey=()=>{const s=curSkin(),b=_heroImg0();return s?skinSprite(b,s):b};
 HUBF.skin=function(){SV.skins=SV.skins||{};const tot=skinBonus(),own=SN();
   const cards=SKINS.map(s=>{const has=SV.skins[s.id],eq=SV.skin===s.id;return `<div class="skCard${has?' has':''}${eq?' on':''}"><div class="skPic"><img src="${IMG[skinSprite('hero_suit',s)]||IMG.hero_suit}" alt=""></div><b>${s.n}</b><small>${fxTxt(s.fx)}</small>${has?`<button class="btn${eq?'':' go'}" data-sw="${s.id}">${eq?'입는 중':'입기'}</button>`:`<button class="btn" data-sb="${s.id}">${s.won.toLocaleString()}원</button>`}</div>`}).join('');
-  return{t:'👔 스킨 옷장',tabs:[],html:`<div class="evalCard"><div class="skPic big"><img src="${IMG[heroKey()]}" alt=""></div><div class="tx"><b>보유 ${own} / ${SKINS.length}벌</b><small>${own?'보유 효과 합계: '+fxTxt(tot):'스킨은 갖고만 있어도 효과가 모두 더해집니다'}</small>${SV.skin?'<button class="mini" id="skOff" style="margin-top:6px">기본 정장으로</button>':''}</div></div><div class="skGrid">${cards}</div><p class="note">스킨 효과는 입지 않아도 보유한 만큼 모두 적용됩니다. 겉모습은 입은 스킨만 바뀝니다. (시험판: 결제 없이 바로 지급)</p>`,
-  bind:B=>{B.querySelectorAll('[data-sb]').forEach(b=>b.onclick=()=>{const s=SKINS.find(x=>x.id===b.dataset.sb);if(b.dataset.ok!=='1'){b.dataset.ok='1';b.textContent='한 번 더 누르면 구매';b.classList.add('go');return}SV.skins[s.id]=1;SV.skin=s.id;sfx('lvup');saveSV();renderTop();toast(`👔 ${s.n} 구매 (시험판) · ${fxTxt(s.fx)}`);renderHub()});
+  return{t:'👔 스킨 옷장',tabs:[],html:`<div class="evalCard"><div class="skPic big"><img src="${IMG[heroKey()]}" alt=""></div><div class="tx"><b>보유 ${own} / ${SKINS.length}벌</b><small>${own?'보유 효과 합계: '+fxTxt(tot):'스킨은 갖고만 있어도 효과가 모두 더해집니다'}</small>${SV.skin?'<button class="mini" id="skOff" style="margin-top:6px">기본 정장으로</button>':''}</div></div><div class="skGrid">${cards}</div><p class="note">스킨 효과는 입지 않아도 보유한 만큼 모두 적용됩니다. 겉모습은 입은 스킨만 바뀝니다. (유료 스킨은 결제 완료 시에만 지급)</p>`,
+  bind:B=>{B.querySelectorAll('[data-sb]').forEach(b=>b.onclick=()=>{
+      const s=SKINS.find(x=>x.id===b.dataset.sb);
+      if(!s||SV.skins[s.id])return;
+      saonePurchase('saone.skin.'+s.id,()=>{
+        SV.skins[s.id]=1;SV.skin=s.id;sfx('lvup');saveSV();renderTop();
+        toast('👔 '+s.n+' 구매 완료 · '+fxTxt(s.fx));renderHub();
+      });
+    });
     B.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{SV.skin=SV.skin===b.dataset.sw?'':b.dataset.sw;saveSV();renderTop();renderHub()});const o=$('skOff');if(o)o.onclick=()=>{SV.skin='';saveSV();renderTop();renderHub()}}}};
 /* 사내 동료 8종 (유료 3종은 레벨업 비용이 더 가파름) */
 PETS.length=0;PETS.push(
@@ -2264,7 +2398,13 @@ HUBF.pet=function(){SV.pets=SV.pets||{};const rows=PETS.map(p=>{const lv=petLv(p
   return{t:'🤝 사내 동료',tabs:[],html:`<p class="note" style="text-align:center">동료 한 명과 함께 출근해 전투를 도움받습니다. 레벨업할 때마다 피해량 +15%.<br>💎 유료 동료는 더 강하지만 레벨업 비용이 훨씬 가파르게 오릅니다.</p><div class="list">${rows}</div>`,
   bind:B=>{const P=k=>PETS.find(x=>x.k===k);
     B.querySelectorAll('[data-adopt]').forEach(b=>b.onclick=()=>{const p=P(b.dataset.adopt);if(SV.gem<p.cost){shake(b);toast('포인트가 부족합니다');return}SV.gem-=p.cost;SV.pets[p.k]=1;if(!SV.pet)SV.pet=p.k;sfx('lvup');saveSV();renderTop();toast('🎉 '+p.n+' 합류!');renderHub()});
-    B.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const p=P(b.dataset.buy);if(b.dataset.ok!=='1'){b.dataset.ok='1';b.textContent='한 번 더 누르면 구매';b.classList.add('go');return}SV.pets[p.k]=1;SV.pet=p.k;sfx('lvup');saveSV();renderTop();toast('🎉 '+p.n+' 영입 (시험판)');renderHub()});
+    B.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const p=P(b.dataset.buy);
+      if(!p||!p.paid)return;
+      saonePurchase('saone.pet.'+p.k,()=>{
+        SV.pets[p.k]=1;SV.pet=p.k;sfx('lvup');saveSV();renderTop();
+        toast('🎉 '+p.n+' 영입 완료');renderHub();
+      });
+    });
     B.querySelectorAll('[data-eq]').forEach(b=>b.onclick=()=>{SV.pet=SV.pet===b.dataset.eq?'':b.dataset.eq;saveSV();renderHub()});
     B.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{const p=P(b.dataset.up),lv=petLv(p.k),c=petCostOf(p,lv);if(lv>=10)return;if(SV.gold<c){shake(b);toast('월급이 부족합니다 ('+kfmt(c)+' 필요)');return}SV.gold-=c;SV.pets[p.k]=lv+1;sfx('lvup');saveSV();renderTop();renderHub()})}}};
 /* 자석: 경력치가 한 번 밀려났다가 빨려 들어옴 */
@@ -2296,5 +2436,48 @@ function initMeta6(){heroImg=heroKey;HUBBTN[5]=['pet','🤝','사내 동료',()=
   if(SV.pet&&!PETS.find(p=>p.k===SV.pet))SV.pet='';renderTop();renderBadges();renderBan()}
 initMeta6();
 
+/* Pause game/audio during native advertisements, payments, and app backgrounding. */
+const saoneMediaHolds=new Set();
+let saoneWasAudioRunning=false;
+window.saoneHoldMedia=function(reason,hold){
+  if(hold){
+    saoneMediaHolds.add(reason);
+    if(typeof S!=='undefined'&&S&&S.state==='play'){S._saoneExternalPause=1;S.state='external'}
+    if(typeof AC!=='undefined'&&AC&&AC.state==='running'){
+      saoneWasAudioRunning=true;
+      AC.suspend().catch(err=>console.warn('Audio suspend failed',err));
+    }
+  }else{
+    saoneMediaHolds.delete(reason);
+    if(saoneMediaHolds.size===0&&!document.hidden){
+      if(typeof S!=='undefined'&&S&&S._saoneExternalPause){
+        if(S.state==='external')S.state='play';
+        S._saoneExternalPause=0;
+        last=performance.now();
+      }
+      if(saoneWasAudioRunning&&typeof AC!=='undefined'&&AC){
+        saoneWasAudioRunning=false;
+        AC.resume().catch(err=>console.warn('Audio resume unavailable',err));
+      }
+    }
+  }
+};
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){window.saoneHoldMedia('background',true)}
+  else{window.saoneHoldMedia('background',false)}
+});
+
+</script>
+<script>
+/* 웹 시험판 전용 플랫폼 (공개 시험 링크·미리보기에서만 주입, 앱/토스 빌드에는 들어가지 않음)
+ * 광고·결제 SDK가 없는 브라우저에서 기능을 시험할 수 있게 보상을 바로 지급합니다. 실제 결제는 일어나지 않습니다. */
+(function(){
+  if(window.SaonePlatform)return;const C=window.Capacitor;if(C&&C.isNativePlatform&&C.isNativePlatform())return;
+  const say=m=>typeof window.saoneNotify==='function'?window.saoneNotify(m):console.info(m);
+  window.SaonePlatform=Object.freeze({kind:'web-test',configured:()=>true,
+    async reward(reason,grant){grant();say('📺 '+reason+' (웹 시험판: 광고 자리)');return true},
+    async purchase(sku,grant){const ok=await grant('webtest-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),sku);if(ok)say('웹 시험판: 결제 없이 지급됐습니다');return !!ok},
+    async restoreOrders(){return 0},async submitScore(){return false},async openLeaderboard(){say('실시간 랭킹은 정식 출시 때 열립니다');return false}});
+})();
 </script>
 </body></html>
