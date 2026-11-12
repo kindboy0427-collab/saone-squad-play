@@ -376,6 +376,8 @@ canvas{display:block;width:100%;height:100%}
 .skPic.big{width:76px;height:76px;border:2px solid #141824}.skPic.big img{width:70px;height:70px}
 .petCard.paid{background:linear-gradient(160deg,#4a3d6e,#2c3550);border-color:#8f7be0}
 #promolist>*{max-width:100%;min-width:0;box-sizing:border-box}.rankRow{width:100%;max-width:min(520px,100%)!important;overflow:hidden}
+/* Critical: CSS display:flex on modal must never override the HTML hidden attribute. */
+[hidden]{display:none!important}
 </style>
 
 <div id="wrap">
@@ -390,7 +392,7 @@ canvas{display:block;width:100%;height:100%}
 
   <div class="bootScr" id="boot"><div class="tlogo">사원특공대</div><div class="tsub">직장 스트레스 서바이벌</div><img id="bootHero" alt="" class="bootHero"><div class="bootBar"><i id="bootBar"></i></div><div class="bootTx">출근 준비 중… <b id="bootPct">0%</b></div><div class="bootTip" id="bootTip"></div></div>
   <div class="bootScr title" id="title" style="display:none"><img id="tm0" class="tmon m0" alt=""><img id="tm1" class="tmon m1" alt=""><img id="tm2" class="tmon m2" alt=""><img id="tm3" class="tmon m3" alt="">
-    <div class="tlogo big">사원특공대</div><div class="tsub">몰려오는 업무를 처리하고 칼퇴하라!</div><img id="titleHero" alt="" class="titleHero"><div class="tap">화면을 터치해서 출근하기</div><div class="tver">시험판 v0.9 · 진행 기록은 이 기기에 저장됩니다</div></div>
+    <div class="tlogo big">사원특공대</div><div class="tsub">몰려오는 업무를 처리하고 칼퇴하라!</div><img id="titleHero" alt="" class="titleHero"><div class="tap">화면을 터치해서 출근하기</div><div class="tver">진행 기록은 이 기기에 저장됩니다</div></div>
   <div class="lobby" id="start">
     <div class="topbar"><button class="gear" id="gearBtn" aria-label="환경 설정">⚙</button><span class="res"><img id="i_gold" alt="">  <span id="r_gold">0</span><button class="plus" data-buy="gold" aria-label="월급 충전">+</button></span><span class="res"><img id="i_gem" alt=""><span id="r_gem">0</span><button class="plus" data-buy="gem" aria-label="포인트 충전">+</button></span><span class="res"><img id="i_cof" alt=""><span id="r_cof">0</span><small id="r_cof_t"></small><button class="plus" data-buy="cof" aria-label="커피 충전">+</button></span></div>
     <section class="view" id="v_shop"><h3>구내 매점</h3>
@@ -1543,6 +1545,11 @@ window.saoneRevokePurchase=function(orderId,sku){
   toast('환불된 구매 내역이 반영됐습니다. 사용 완료된 아이템은 고객지원 확인이 필요할 수 있습니다.');
   return true;
 };
+// Private native bridge reads this once, then removes it from window.
+window.saonePassTier=()=>Number(SV.ps2?.tier||0);
+window.saoneWasOrderGranted=(orderId,sku)=>Boolean(
+  SV.tossOrders?.[orderId]===sku && !SV.tossRefundedOrders?.[orderId]
+);
 window.saoneRestoreGrant=function(orderId,sku){
   if(!orderId || typeof sku!=='string' || !sku.startsWith('saone.'))return false;
   if(SV.tossRefundedOrders?.[orderId])return false;
@@ -1876,14 +1883,13 @@ function hubAch(){SV.ach=SV.ach||{};const done=ACH.filter(a=>SV.ach[a[0]]).lengt
 
 /* 5) 사내 게시판 + 메인 이벤트 배너 */
 const NOTICE=[['11.09','업데이트','업무 일지·메일함·랭킹·인사고과·사원증·사내 동료 추가','📋 업무 일지: 매일·매주 미션을 하고 활동 점수 상자를 받으세요.\n✉ 사내 메일함: 보상은 메일로 옵니다. 쿠폰도 여기서 입력합니다.\n🏆 실적 랭킹: 무한 야근 기록으로 같은 층 동료와 경쟁합니다.\n🎖 인사고과: 업적 20개. 달성하면 포인트와 호칭를 받습니다.\n🪪 사원증: 프로필을 눌러 닉네임과 호칭를 바꿔 보세요.\n🐱 사내 동료: 전투를 도와주는 동료 3종을 입양하세요.'],
- ['11.08','이벤트','시험판 쿠폰 SAONE2026','메일함 → 🎟 쿠폰 입력에 SAONE2026을 넣으면 포인트 300과 결재 도장 3개를 드립니다. (1인 1회)'],
  ['11.07','업데이트','♾ 무한 야근 모드','모든 스킬을 다 올린 뒤에도 레벨업마다 공격력·체력·방어력·회복 중 하나를 고를 수 있습니다. 150초마다 상사가 나타납니다.'],
  ['11.06','공지','요일 효과 안내','월요병(월) 업무 체력 +10%·경력 +15%\n수요일 고비(수) 공격력 +5%\n불금(금) 이동 +10%·경력 +10%\n주말 출근(토·일) 공격력 +8%·경력 +20%\n매일: 마지막 상사 60초 전 「퇴근 1분 전 초인 모드」'],
  ['11.05','공지','확률 공개 안내','나에게 주는 선물의 등급별 확률은 상점 화면의 확률표에서 언제든 확인할 수 있습니다.']];
 const TAGC={업데이트:'#3c8ef0',이벤트:'#d8322f',공지:'#2fa36b'};
 function hubBoard(){SV.ntSeen=NOTICE[0][0];saveSV();return{t:'📢 사내 게시판',tabs:[],html:`<div class="list">${NOTICE.map((n,i)=>`<details class="ntc"${i===0?' open':''}><summary><span class="tag" style="background:${TAGC[n[1]]}">${n[1]}</span><b>${n[2]}</b><small>${n[0]}</small></summary><p>${n[3].replace(/\n/g,'<br>')}</p></details>`).join('')}</div>`,bind:()=>{}}}
 function banners(){const df=dayFx(),wd='일월화수목금토'[new Date().getDay()];dwRoll();
-  return[{c:'linear-gradient(120deg,#ff8a5b,#d8322f)',em:'🎟',t:'시험판 쿠폰 SAONE2026',s:'메일함에서 입력하면 포인트 300 + 결재 도장 3',go:()=>openHub('mail','cp')},
+  return[{c:'linear-gradient(120deg,#ff8a5b,#d8322f)',em:'☕',t:'첫 7일 인턴 혜택',s:'인턴 기간 중 광고 없이 보상 받고 2배속 출근',go:()=>tab('shop')},
    {c:'linear-gradient(120deg,#4aa3ff,#1f4fb5)',em:'🏆',t:'무한 야근 주간 랭킹',s:(SV.endBest&&SV.endBest.t?'내 순위 '+myRank('t')+'위 · ':'')+'매주 월요일 순위 보상',go:()=>openHub('rank','t')},
    {c:'linear-gradient(120deg,#9b6bff,#5b2fb5)',em:df?df.n.split(' ')[0]:'☕',t:df?'오늘의 요일 효과 '+df.n.replace(/^\S+\s/,''):wd+'요일 근무 중',s:df?df.m:'평범한 하루 · 퇴근 1분 전 초인 모드는 매일!',go:()=>openHub('board')},
    {c:'linear-gradient(120deg,#ffd84a,#f0a020)',em:'📋',t:'오늘의 업무 일지 '+(SV.dpt||0)+'/100',s:'활동 점수를 채우고 상자 5개 받기',go:()=>openHub('ms','d'),dark:1},
