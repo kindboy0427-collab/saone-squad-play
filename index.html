@@ -399,11 +399,11 @@ canvas{display:block;width:100%;height:100%}
       <div class="hr" data-sp="pk" id="pkBox"></div>
       <div class="hr" id="hrBox" data-sp="hr"><b class="hrt">인사팀 · 고용 계약</b><span class="note" id="hrNow"></span>
         <div class="boxes" style="grid-template-columns:repeat(3,minmax(0,1fr))">
-          <div class="box ct c1"><div class="ctH">단기 알바</div><img class="ctImg" id="ctI1" alt=""><b>단기 알바 계약</b><small>7일 · 광고 없이 보상 · 2배속<br>매일 포인트 60</small><button class="btn" data-buy="a">1,900원</button></div>
-          <div class="box ct c2"><div class="ctH">계약직</div><img class="ctImg" id="ctI2" alt=""><b>계약직 계약</b><small>30일 · 광고 없이 보상 · 2배속<br>매일 포인트 100 · 커피 한도 80</small><button class="btn" data-buy="c">5,900원</button></div>
-          <div class="box s ct c3"><div class="ctH">정규직 <span class="best">BEST</span></div><img class="ctImg" id="ctI3" alt=""><b>정규직 계약</b><small>1년 · 광고 없이 보상 · 2배속<br>매일 포인트 150 · 커피 한도 100<br>외근 적립 +20%</small><button class="btn" data-buy="r">49,000원</button></div>
+          <div class="box ct c1"><div class="ctH">단기 알바</div><img class="ctImg" id="ctI1" alt=""><b>단기 알바 계약</b><small>7일 · 광고 없이 보상 · 2배속<br>매일 포인트 60</small><button class="btn" data-buy="a">1,300원</button></div>
+          <div class="box ct c2"><div class="ctH">계약직</div><img class="ctImg" id="ctI2" alt=""><b>계약직 계약</b><small>30일 · 광고 없이 보상 · 2배속<br>매일 포인트 100 · 커피 한도 80</small><button class="btn" data-buy="c">4,100원</button></div>
+          <div class="box s ct c3"><div class="ctH">정규직 <span class="best">BEST</span></div><img class="ctImg" id="ctI3" alt=""><b>정규직 계약</b><small>1년 · 광고 없이 보상 · 2배속<br>매일 포인트 150 · 커피 한도 100<br>외근 적립 +20%</small><button class="btn" data-buy="r">34,300원</button></div>
         </div>
-        <div class="row2" id="noAdsRow"><div class="tx"><b>신입 교육 받기 · 영구</b>교육을 수료하면 광고 없이 보상을 받습니다 (2배속·일급은 계약 전용)</div><button class="btn" data-buy="n">2,900원</button></div>
+        <div class="row2" id="noAdsRow"><div class="tx"><b>신입 교육 받기 · 영구</b>교육을 수료하면 광고 없이 보상을 받습니다 (2배속·일급은 계약 전용)</div><button class="btn" data-buy="n">2,000원</button></div>
       </div>
       <div data-sp="bx" class="list" style="justify-items:center">
       <div class="free"><button class="mini" id="freeGem">출근 보너스 +30</button><button class="mini" id="adGem"><span class="adl">광고</span> +30 (<span id="adLeft">2</span>)</button><button class="mini" id="adCof"><span class="adl">광고</span> 커피 +5</button></div>
@@ -459,7 +459,7 @@ canvas{display:block;width:100%;height:100%}
       <button class="mini" id="nextDay">(시험용) 다음 날로 넘기기</button>
       <button class="mini" data-back>← 근무로</button></section>
     <div class="modal" id="hrModal" hidden><div class="card2"><img id="hrImg" alt="" style="width:90px"><h3 id="hrTitle"></h3><p id="hrMsg"></p>
-      <div class="list"><button class="btn" data-buy="a">단기 알바 계약 · 7일 · 1,900원</button><button class="btn" data-buy="c">계약직 계약 · 30일 · 5,900원</button><button class="btn" data-buy="r">정규직 계약 · 1년 · 49,000원</button><button class="btn ghost" id="hrLater">아니요, 그냥 다닐게요</button></div>
+      <div class="list"><button class="btn" data-buy="a">단기 알바 계약 · 7일 · 1,300원</button><button class="btn" data-buy="c">계약직 계약 · 30일 · 4,100원</button><button class="btn" data-buy="r">정규직 계약 · 1년 · 34,300원</button><button class="btn ghost" id="hrLater">아니요, 그냥 다닐게요</button></div>
       <p class="note" id="hrNote">시험판이라 실제 결제는 없습니다.</p></div></div>
     <div class="modal" id="eqModal" hidden><div class="card2"><div id="eqBody" style="display:flex;flex-direction:column;align-items:center;gap:8px"></div>
       <div class="free"><button class="btn" id="eqAct">착용</button><button class="btn ghost" id="eqClose">닫기</button></div></div></div>
@@ -1478,7 +1478,7 @@ function initMeta2(){
   $('rw1500').onclick=()=>{SV.cr=SV.cr||{};SV.cr[1500]=1;SV.inv.push({k:'ss_tool',g:5});saveSV();renderCarn();toast('팀장 업무 도구 「종신 계약 레이저 프레젠터」 획득')};
   $('nextDay').onclick=()=>{SV.shift=(SV.shift||0)+86400000;saveSV();cday=Math.min(6,carnDay());renderCarn()};
   setInterval(()=>{if($('start').style.display==='none')return;renderBadges();if($('v_patrol').classList.contains('on'))renderPatrol()},5000)}
-// ── 인턴(첫 7일 광고 없음·2배속) → 계약직(30일)·정규직(1년): 광고 없음+2배속+일급, 만료 시 광고 복귀 / 신입 교육 받기(=광고 제거, 영구 2,900원, 광고만) / 출근 도장 ──
+// ── 인턴(첫 7일 광고 없음·2배속) → 계약직(30일)·정규직(1년): 광고 없음+2배속+일급, 만료 시 광고 복귀 / 신입 교육 받기(=광고 제거, 영구 2,000원, 광고만) / 출근 도장 ──
 const WEEK=7*86400000;
 const firstWeek=()=>nowT()-(SV.firstT||nowT())<WEEK;
 const contract=()=>SV.ct&&SV.ct.until>nowT()?SV.ct:null;
@@ -1532,21 +1532,21 @@ let pkView='pass';
 function renderPk(){const B=$('pkBox');const p=passState(),plv=Math.floor(p.xp/PXP),left=Math.ceil((SEASON-((nowT()-SV.firstT)%SEASON))/86400000);
   let html=`<div class="ptab"><button class="mini${pkView==='pass'?' on':''}" data-pv="pass">분기 성과급</button><button class="mini${pkView==='pk'?' on':''}" data-pv="pk">포인트 충전</button><button class="mini${pkView==='fund'?' on':''}" data-pv="fund">승진 적금</button><button class="mini${pkView==='dept'?' on':''}" data-pv="dept">칼퇴 수당</button></div>`;
   if(pkView==='pk'){const got=SV.welcome;
-    html+=`<div class="row2${got?' done':''}"><div class="tx"><b>신입 환영 선물 세트 (계정당 1회)</b>포인트 300 · 과장 장비 1 · 커피 30 · 결재 도장 3</div><button class="btn" data-pk="welcome" ${got?'disabled':''}>${got?'구매 완료':'900원'}</button></div>
+    html+=`<div class="row2${got?' done':''}"><div class="tx"><b>신입 환영 선물 세트 (계정당 1회)</b>포인트 300 · 과장 장비 1 · 커피 30 · 결재 도장 3</div><button class="btn" data-pk="welcome" ${got?'disabled':''}>${got?'구매 완료':'600원'}</button></div>
       <div class="row2"><div class="tx"><b>법인카드 포인트</b>첫 구매 2배</div></div>`+
-      [[1200,60],[6000,330],[12000,700],[33000,2000],[69000,4300],[119000,7600]].map(([w,g])=>{const first=!(SV.gp||{})[w];return `<div class="row2"><div class="tx"><b>포인트 ${g.toLocaleString()}${first?` <span class="note">+${g.toLocaleString()} 첫 구매</span>`:''}</b></div><button class="btn" data-gp="${w}" data-g="${g}">${w.toLocaleString()}원</button></div>`}).join('')}
+      [[800,60],[4200,330],[8400,700],[23100,2000],[48300,4300],[83300,7600]].map(([w,g])=>{const first=!(SV.gp||{})[w];return `<div class="row2"><div class="tx"><b>포인트 ${g.toLocaleString()}${first?` <span class="note">+${g.toLocaleString()} 첫 구매</span>`:''}</b></div><button class="btn" data-gp="${w}" data-g="${g}">${w.toLocaleString()}원</button></div>`}).join('')}
   else if(pkView==='pass'){
     html+=`<div class="row2"><div class="tx"><b>${p.n+1}분기 성과급 패스 · ${plv}/${PLV}단계</b>남은 기간 ${left}일 · 출근하면 성과 점수가 쌓입니다 (처리 10개당 1, 칼퇴 +60)</div></div><div class="exp2"><i style="width:${p.xp%PXP}%"></i></div>
-      <div class="free">${p.tier<1?'<button class="btn" data-ps="1">일반 5,500원</button>':''}${p.tier<2?`<button class="btn" data-ps="2">고급 ${p.tier===1?'10,000':'15,500'}원</button>`:''}<button class="mini" data-pskip>성과 10단계 올리기 · 포인트 1,000</button></div>
+      <div class="free">${p.tier<1?'<button class="btn" data-ps="1">일반 3,900원</button>':''}${p.tier<2?`<button class="btn" data-ps="2">고급 ${p.tier===1?'7,000':'10,900'}원</button>`:''}<button class="mini" data-pskip>성과 10단계 올리기 · 포인트 1,000</button></div>
       <div class="passgrid"><span></span><b>무료</b><b>일반</b><b>고급</b>`;
     for(let lv=1;lv<=PLV;lv++){html+=`<span class="lv${lv<=plv?' on':''}">${lv}</span>`;for(let tr=0;tr<3;tr++){const k=lv+'-'+tr,got=p.cl[k],can=lv<=plv&&tr<=p.tier&&!got;
       html+=`<button class="pcell${got?' got':''}${tr>p.tier?' lock':''}" data-pc="${k}" ${can?'':'disabled'}>${PREW(lv,tr)[0]}${got?' ✓':''}</button>`}}
     html+='</div>'}
   else if(pkView==='fund'){const own=SV.fund,al=SV.alv||1;
-    html+=`<div class="row2"><div class="tx"><b>승진 적금 (1회 구매 · 영구)</b>계정 레벨을 올릴 때마다 포인트 지급 · 총 ${FUND.reduce((a,_,i)=>a+fundRew(i),0).toLocaleString()} 포인트</div>${own?'<span class="note">가입 완료</span>':'<button class="btn" data-pk="fund">11,000원</button>'}</div>`+
+    html+=`<div class="row2"><div class="tx"><b>승진 적금 (1회 구매 · 영구)</b>계정 레벨을 올릴 때마다 포인트 지급 · 총 ${FUND.reduce((a,_,i)=>a+fundRew(i),0).toLocaleString()} 포인트</div>${own?'<span class="note">가입 완료</span>':'<button class="btn" data-pk="fund">7,700원</button>'}</div>`+
       FUND.map((l,i)=>{const got=(SV.fundCl||{})[l],can=own&&al>=l&&!got;return `<div class="row2${got?' done':al<l?' lock':''}"><div class="tx"><b>계정 레벨 ${l}</b>포인트 ${fundRew(i).toLocaleString()}</div><button class="btn" data-fd="${l}" data-v="${fundRew(i)}" ${can?'':'disabled'}>${got?'받음':'받기'}</button></div>`}).join('')}
   else{const own=SV.dept;
-    html+=`<div class="row2"><div class="tx"><b>칼퇴 수당 통장 (1회 구매 · 영구)</b>장을 칼퇴(클리어)할 때마다 수당으로 포인트를 받습니다.<br>기본 수당: 장마다 200~1,000 · 통장을 만들면 장마다 1,200~6,000 추가</div>${own?'<span class="note">구매 완료</span>':'<button class="btn" data-pk="dept">4,900원</button>'}</div>`+
+    html+=`<div class="row2"><div class="tx"><b>칼퇴 수당 통장 (1회 구매 · 영구)</b>장을 칼퇴(클리어)할 때마다 수당으로 포인트를 받습니다.<br>기본 수당: 장마다 200~1,000 · 통장을 만들면 장마다 1,200~6,000 추가</div>${own?'<span class="note">구매 완료</span>':'<button class="btn" data-pk="dept">3,400원</button>'}</div>`+
       DEPT.slice(0,Math.min(CH.length,Math.max(5,cleared+3))).map(([f,pd],i)=>{const done=i<cleared,c=(SV.deptCl||{});return `<div class="row2${!done?' lock':''}"><div class="tx"><b>${i+1}장 ${CH[i].name} 칼퇴</b>기본 수당 ${f} · 통장 수당 ${pd.toLocaleString()}</div>
         <button class="btn" data-dp="${i}-f" data-v="${f}" ${done&&!c[i+'-f']?'':'disabled'}>${c[i+'-f']?'✓':'기본'}</button><button class="btn" data-dp="${i}-p" data-v="${pd}" ${done&&own&&!c[i+'-p']?'':'disabled'}>${c[i+'-p']?'✓':'통장'}</button></div>`}).join('')}
   B.innerHTML=html;
@@ -2153,14 +2153,14 @@ HUBF.title=function(){const own=ACH.filter(a=>(SV.ach||{})[a[0]]),cur=titleBonus
   bind:B=>B.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{SV.ttl=SV.ttl===b.dataset.t?'':b.dataset.t;saveSV();renderTop();renderHub()})}};
 /* 스킨 24종 (유료 · 보유만 해도 효과 누적) */
 const SKINS=[
- ['s1','캐주얼 프라이데이','#4a78c2','#f0a020','cap','#f0a020',3300,{spd:.05}],['s2','야근 좀비','#55664f','#8a9a3a','bandage','#fff',3300,{regen:.01}],['s3','헬스장 러버','#d8322f','#ffffff','headband','#fff',3300,{hp:.08}],
- ['s4','재택근무 잠옷','#8ec5ff','#ffd84a','nightcap','#6aa7f0',3300,{exp:.08}],['s5','현장 안전모','#f0a020','#2c3550','helmet','#ffd23a',3300,{def:4}],['s6','탕비실 바리스타','#6b4a2f','#f7f5ef','cap','#3a2a1c',3300,{cd:.03}],
- ['s7','워크숍 사회자','#b35bd6','#ffd84a','party','#ffd84a',5500,{gold:.10}],['s8','송년회 산타','#c9242a','#2fa36b','santa','#c9242a',5500,{gold:.08,exp:.04}],['s9','골프 접대룩','#2fa36b','#ffffff','visor','#ffffff',5500,{crit:.03}],
- ['s10','해외 출장 코트','#b99866','#5a3a22','sunglasses','#1d2333',5500,{mag:.40}],['s11','전산팀 후드','#23283a','#2fbf8f','headset','#2fbf8f',5500,{cd:.04}],['s12','재무팀 조끼','#3f5a5a','#e8b820','visor','#3fcf8e',5500,{gold:.12}],
- ['s13','영업왕 금배지','#2b3a67','#e8b820','star','#e8b820',5500,{boss:.08}],['s14','인사팀 면접관','#5a5a66','#9b6bff','glasses','#1d2333',5500,{exp:.10}],['s15','법무팀 블랙','#15171d','#c9cfda','glasses','#c9cfda',5500,{def:5}],
- ['s16','디자이너 베레모','#ff7ad9','#2ad4ff','beret','#d8322f',5500,{crit:.04}],['s17','비 오는 날 우비','#ffd84a','#3c8ef0','rainhat','#ffd84a',5500,{spd:.06}],['s18','명절 한복','#e05a8a','#3fcf8e','gat','#1d2333',7700,{hp:.10}],
- ['s19','승진 축하 턱시도','#0f1220','#d8322f','tophat','#0f1220',7700,{atk:.06}],['s20','휴가 하와이안','#ff8a5b','#3fcf8e','straw','#e8c98a',7700,{regen:.015}],['s21','히어로 망토','#2a4fd6','#d8322f','mask','#d8322f',9900,{atk:.08}],
- ['s22','닌자 칼퇴','#23252e','#d8322f','ninja','#23252e',9900,{spd:.05,cd:.03}],['s23','황금 임원','#e8b820','#8a5a2b','crown','#ffd23a',14900,{atk:.10,gold:.10}],['s24','전설의 회장님','#7a1f1f','#e8b820','halo','#ffd23a',19900,{atk:.10,hp:.10,mag:.40}]]
+ ['s1','캐주얼 프라이데이','#4a78c2','#f0a020','cap','#f0a020',2300,{spd:.05}],['s2','야근 좀비','#55664f','#8a9a3a','bandage','#fff',2300,{regen:.01}],['s3','헬스장 러버','#d8322f','#ffffff','headband','#fff',2300,{hp:.08}],
+ ['s4','재택근무 잠옷','#8ec5ff','#ffd84a','nightcap','#6aa7f0',2300,{exp:.08}],['s5','현장 안전모','#f0a020','#2c3550','helmet','#ffd23a',2300,{def:4}],['s6','탕비실 바리스타','#6b4a2f','#f7f5ef','cap','#3a2a1c',2300,{cd:.03}],
+ ['s7','워크숍 사회자','#b35bd6','#ffd84a','party','#ffd84a',3900,{gold:.10}],['s8','송년회 산타','#c9242a','#2fa36b','santa','#c9242a',3900,{gold:.08,exp:.04}],['s9','골프 접대룩','#2fa36b','#ffffff','visor','#ffffff',3900,{crit:.03}],
+ ['s10','해외 출장 코트','#b99866','#5a3a22','sunglasses','#1d2333',3900,{mag:.40}],['s11','전산팀 후드','#23283a','#2fbf8f','headset','#2fbf8f',3900,{cd:.04}],['s12','재무팀 조끼','#3f5a5a','#e8b820','visor','#3fcf8e',3900,{gold:.12}],
+ ['s13','영업왕 금배지','#2b3a67','#e8b820','star','#e8b820',3900,{boss:.08}],['s14','인사팀 면접관','#5a5a66','#9b6bff','glasses','#1d2333',3900,{exp:.10}],['s15','법무팀 블랙','#15171d','#c9cfda','glasses','#c9cfda',3900,{def:5}],
+ ['s16','디자이너 베레모','#ff7ad9','#2ad4ff','beret','#d8322f',3900,{crit:.04}],['s17','비 오는 날 우비','#ffd84a','#3c8ef0','rainhat','#ffd84a',3900,{spd:.06}],['s18','명절 한복','#e05a8a','#3fcf8e','gat','#1d2333',5400,{hp:.10}],
+ ['s19','승진 축하 턱시도','#0f1220','#d8322f','tophat','#0f1220',5400,{atk:.06}],['s20','휴가 하와이안','#ff8a5b','#3fcf8e','straw','#e8c98a',5400,{regen:.015}],['s21','히어로 망토','#2a4fd6','#d8322f','mask','#d8322f',6900,{atk:.08}],
+ ['s22','닌자 칼퇴','#23252e','#d8322f','ninja','#23252e',6900,{spd:.05,cd:.03}],['s23','황금 임원','#e8b820','#8a5a2b','crown','#ffd23a',10400,{atk:.10,gold:.10}],['s24','전설의 회장님','#7a1f1f','#e8b820','halo','#ffd23a',13900,{atk:.10,hp:.10,mag:.40}]]
  .map(([id,n,suit,tie,acc,ac,won,fx])=>({id,n,suit,tie,acc,ac,won,fx}));
 function skinBonus(){const o={};if(!SV||!SV.skins)return o;for(const s of SKINS)if(SV.skins[s.id])addTo(o,s.fx);return o}
 function petBonus(){return SV&&SV.pet==='dog'&&petLv('dog')?{gold:.10+.01*(petLv('dog')-1)}:{}}
@@ -2216,9 +2216,9 @@ PETS.length=0;PETS.push(
  {k:'cat',n:'사무실 고양이 야옹 대리',r:'사내 마스코트',d:'가까운 적에게 달려들어 앞발로 할퀴어요',need:()=>'',cost:300},
  {k:'robot',n:'청소 로봇 룸바 주임',r:'총무팀 비품',d:'수집 거리 +40%, 지나가며 닿은 적에게 피해',need:()=>'',cost:500},
  {k:'drone',n:'서류 드론 드론 인턴',r:'문서 수발실',d:'3초마다 종이비행기 유도탄 (Lv.5·10에 1발씩 추가)',need:()=>'',cost:800},
- {k:'senior',n:'든든한 사수 박 과장',r:'유료 동료',d:'2.5초마다 결재 도장을 내리찍어 넓은 범위 피해',need:()=>'',won:3300,paid:1},
- {k:'hacker',n:'전산팀 해커 최 주임',r:'유료 동료',d:'2초마다 연쇄 감전 (적 4명, 레벨 3마다 +1명)',need:()=>'',won:5500,paid:1},
- {k:'dog',n:'회장님 반려견 골든 이사',r:'유료 동료',d:'3.5초마다 짖어서 주변 적을 밀치고 큰 피해 · 전투 월급 +10%',need:()=>'',won:9900,paid:1});
+ {k:'senior',n:'든든한 사수 박 과장',r:'유료 동료',d:'2.5초마다 결재 도장을 내리찍어 넓은 범위 피해',need:()=>'',won:2300,paid:1},
+ {k:'hacker',n:'전산팀 해커 최 주임',r:'유료 동료',d:'2초마다 연쇄 감전 (적 4명, 레벨 3마다 +1명)',need:()=>'',won:3900,paid:1},
+ {k:'dog',n:'회장님 반려견 골든 이사',r:'유료 동료',d:'3.5초마다 짖어서 주변 적을 밀치고 큰 피해 · 전투 월급 +10%',need:()=>'',won:6900,paid:1});
 const petCostOf=(p,lv)=>Math.round(p.paid?4000*Math.pow(2.1,lv-1):2000*Math.pow(1.7,lv-1));
 for(const k in petIc)delete petIc[k];
 function petPerson(c,t,o){const b=Math.sin(t*9)*1.2;c.fillStyle=o.shirt;c.beginPath();c.roundRect(-7,-1+b*.3,14,13,4);c.fill();c.stroke();c.fillStyle='#2c3550';c.fillRect(-6,11,5,4+b);c.fillRect(1,11,5,4-b);
